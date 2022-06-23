@@ -21,9 +21,9 @@ html_home = ("""
         <div class="main">
         <p>This is a scheduler application to assist responsible brothers 
         in the congregation to create and manage <strong>our christian and life ministry meeting.</strong>
-        </p>        
-        <p>This Software is in <strong style="color: #FF0000">No way related or backed by the
-        Watchtower Bible And Track Society</strong> Read More about this in the <strong>Terms and Conditions</strong>.
+        This Software is in <strong>No way related or backed by the
+        Watchtower Bible And Track Society</strong>. Rather it's a tool to make life easier for brothers in charge
+        of designing the Meeting WorkBook program for their respective congregations. Read More about this in the <strong>Terms and Conditions</strong>.
         Now Read the Usage Guide below to get started</p>
 
         <h2>NWB Scheduler - Usage</h2>
