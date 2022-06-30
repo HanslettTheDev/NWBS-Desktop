@@ -4,14 +4,14 @@ from PyQt6.QtWidgets import (QMainWindow, QPushButton, QVBoxLayout,
 QWidget, QLabel, QLineEdit)
 
 from interface.home import Ui_MainWindow as HomeWindow
-from home.utils import Utils
-
+from home.models import PublisherModel
 class BaseHomeWindow(QMainWindow):
     def __init__(self, *args, **kwargs) -> None:
         super(BaseHomeWindow, self).__init__(*args, **kwargs)
         self.ui = HomeWindow()
         self.ui_tweaks = InterfaceTweaks
-        self.utils = Utils()
+        self.table_model = PublisherModel()
+    
         self.ui.setupUi(self)
 
         #set window defaults
