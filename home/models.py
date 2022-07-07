@@ -21,7 +21,6 @@ class PublisherModel:
         '''Add publishers to database'''
         rows = self.model.rowCount()
         self.model.insertRows(rows, 1)
-        print(data)
         for col_index, data_field in enumerate(data):
             self.model.setData(self.model.index(rows, col_index + 1), data_field)
         self.model.submitAll()
@@ -32,7 +31,3 @@ class PublisherModel:
         self.model.removeRow(index_position)
         self.model.submitAll()
         self.model.select()
-
-    
-    # def __repr__(self):
-    #     return f"PublisherModel()"

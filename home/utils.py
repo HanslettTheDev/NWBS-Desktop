@@ -4,6 +4,9 @@ utils.py
 
 database operations here
 '''
+
+import calendar
+import json
 import sys
 import os
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
@@ -13,10 +16,28 @@ from PyQt6.QtCore import qDebug
 
 # GLOBALS
 
+months = {
+	'January': 1,
+	'February': 2,
+	'March': 3,
+	'April': 4,
+	'May': 5,
+	'June': 6,
+	'July': 7,
+	'August': 8,
+	'September': 9,
+	'October': 10,
+	'November': 11,
+	'December': 12
+}
+
 def database_exists():
 	'''Checks if the database exists.'''
-	cursor = QSqlQuery()
-	return cursor.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='congregation_database'")
+	insert_cursor = QSqlQuery("SELECT congregation_name FROM congregation_database")
+	if insert_cursor.isSelect() and insert_cursor.isActive():
+		if not insert_cursor.seek(0):
+			return False
+	return True
 
 def create_database(database_name):
 	'''Creates and opens a database connection.'''
@@ -64,7 +85,51 @@ def save_congname(congregation_name:str):
 def show_records():
 	pass
 
+def test():
+	calen = calendar.Calendar()
+	blob = {}
+	for month, value in months.items():
+		x = calen.monthdayscalendar(2022, value)
+		verified = []
+		for value in x:
+			if value[0] == 0:
+				continue
+			verified.append(value)
 
-# if __name__ == '__main__':
-# 	app = QApplication(sys.argv)
-# 	create_database()
+		blob[month] = verified
+		with open("months.json", "w") as f:
+			json.dump(blob, f, indent=2)
+
+def check_weeks():
+	count = 0
+	with open("months.json", "r") as f:
+		blob = json.load(f)
+		for month, value in blob.items():
+			for v in value:
+				print(month, v)
+				count += 1
+	print(count)
+
+def get_range(month:str, end_month:str):
+	count = 0
+	count2 = 0
+	with open("months.json", "r") as f:
+		blob = json.load(f)
+		weeks = blob[month]
+	for bb, value in blob.items():
+		if bb == month:
+			break
+		for vl in value:
+			count += 1
+	for bb, value in blob.items():
+		if bb == end_month:
+			for vl in value:
+				count2 += 1
+			break
+		for vl in value:
+			count2 += 1
+	print(count+1, count2)
+
+# get_range("May", "June")
+# test()
+# check()
