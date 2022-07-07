@@ -42,7 +42,7 @@ class Congregation(BaseHomeWindow):
 		self.ui.clone_widget.layout().addWidget(bframe)
 	
 	def real_database(self):
-		self.ui_tweaks._after_home_view_load(self)
+		self.congregation._after_home_view_load(self)
 
 	def fake_database(self):
 		header = "Do you want to proceed with a test database?"
@@ -86,10 +86,10 @@ class Congregation(BaseHomeWindow):
 			save_name = save_congname(input_.text())
 			if not save_name:
 				return QMessageBox.warning(None, "Unexpected Error", "Something went wrong!")
-			self.ui_tweaks._after_congregation_check(self)
+			self.congregation._after_congregation_check(self)
 		else:
 			QMessageBox.information(None, "Notification", "You need to enter a congregation name to proceed")
-			return self.ui_tweaks._after_home_view_load(self)
+			return self.congregation._after_home_view_load(self)
 	
 	def _after_congregation_check(self):
 		'''After congregation checks are done, display data'''
@@ -106,13 +106,13 @@ class Congregation(BaseHomeWindow):
 		add_button.setObjectName("add_publisher_button")
 		add_button.setMinimumHeight(55)
 		add_button.setStyleSheet("background-color: white;")
-		add_button.clicked.connect(lambda: self.ui_tweaks.add_publisher(self))
+		add_button.clicked.connect(lambda: self.congregation.add_publisher(self))
 		self.ui.clone_widget.layout().addWidget(add_button)
 
 
 		delete_button = QPushButton("Delete Publisher")
 		delete_button.setObjectName("delete_publisher_button")
-		delete_button.clicked.connect(lambda: self.ui_tweaks.delete_publisher(self))
+		delete_button.clicked.connect(lambda: self.congregation.delete_publisher(self))
 		delete_button.setMinimumHeight(55)
 		delete_button.setStyleSheet("background-color: white;")
 		self.ui.clone_widget.layout().addWidget(delete_button)

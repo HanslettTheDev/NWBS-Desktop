@@ -113,7 +113,7 @@ def check_weeks():
 def get_range(month:str, end_month:str):
 	count = 0
 	count2 = 0
-	with open("months.json", "r") as f:
+	with open(os.path.join(os.getcwd(),"months.json"), "r") as f:
 		blob = json.load(f)
 		weeks = blob[month]
 	for bb, value in blob.items():
@@ -128,8 +128,8 @@ def get_range(month:str, end_month:str):
 			break
 		for vl in value:
 			count2 += 1
-	print(count+1, count2)
+	return [count, count2]
 
 # get_range("May", "June")
-# test()
+test()
 # check()

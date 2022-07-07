@@ -1,5 +1,4 @@
 import json, asyncio, aiohttp, re
-# from nwb.models import add_data
 from bs4 import BeautifulSoup
 
 class JWIZARD:
@@ -22,7 +21,7 @@ class JWIZARD:
               return await response.text()
       except Exception as error:
           print(error)
-  def scrap_data(self, html):
+  def scrap_data(self, html) -> dict:
     soup = BeautifulSoup(html, "html5lib") # If this line causes an error, run 'pip install html5lib' or install html5lib
     #soup.prettify()
 
@@ -131,7 +130,6 @@ class JWIZARD:
     nwb_lac.pop()
     nwb_lac.pop(0)
     for n in nwb_lac:
-      print(n == "):")
       if n in ["“", "”", ":", "”:"]:
         nwb_lac.remove(n)
       if n == "you":
@@ -153,30 +151,29 @@ class JWIZARD:
     concluding_song = SectionX4[0].select(".pGroup ul li strong")[-2].text
 
     nwb = {
-        'month': nwb_date,
-        'reading': reading,
-        'opening_song': OpenxSong,
-        'fine_fine_lesson': MessageHd,
-        'bible_reading': BibleRdxs,
-        'bible_reading_point': bible_reading_point,
-        'preaching': nwb_parts,
-        'preaching_points': nwb_parts_point,
-        'preaching_time': nwb_parts_time,
-        'middle_song': middle_song,
-        'middle_parts': nwb_lac,
-        'middle_parts_time': nwb_lac_time,
-        'book_study': book_study,
-        'book_study_box': "", 
-        'concluding_song': concluding_song, 
+      'month': nwb_date,
+      'reading': reading,
+      'opening_song': OpenxSong,
+      'fine_fine_lesson': MessageHd,
+      'bible_reading': BibleRdxs,
+      'bible_reading_point': bible_reading_point,
+      'preaching': nwb_parts,
+      'preaching_points': nwb_parts_point,
+      'preaching_time': nwb_parts_time,
+      'middle_song': middle_song,
+      'middle_parts': nwb_lac,
+      'middle_parts_time': nwb_lac_time,
+      'book_study': book_study,
+      'book_study_box': "", 
+      'concluding_song': concluding_song,
     }
     
     return nwb
-    
-
 
   async def main(self):
     async with aiohttp.ClientSession() as session:
         tasklist = []
+        items = {}
 
         
         for _ , url in self.get_all_urls().items():
@@ -185,7 +182,11 @@ class JWIZARD:
         htmls = await asyncio.gather(*tasklist)
 
         for html in htmls:
-            self.scrap_data(html)
+            info = self.scrap_data(html)
+            items[info["month"]] = info
+      
+            with open('nwb.json', 'w') as f:
+                json.dump(items, f, indent=4)
 
 # weeklist=[x for x in range(36, 27)]
 # basepath="https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num}"
