@@ -1,11 +1,12 @@
-import json, asyncio, aiohttp, re
+import json, asyncio, aiohttp, re, os
 from bs4 import BeautifulSoup
 
 class JWIZARD:
-  def __init__(self, basepath = "", weeklist=[], month=[]):
+  def __init__(self, basepath = "", weeklist=[], month=[], pname="nwb"):
         self.basepath = basepath
         self.weeklist = weeklist
         self.month = month
+        self.pname = pname
         self.pathdict = {}
         
   def get_all_urls(self):
@@ -15,12 +16,12 @@ class JWIZARD:
     return self.pathdict
           
   async def fetch_data(self,session, url):
-      try:
-          async with session.get(url) as response:
-              print("fetching ", url)
-              return await response.text()
-      except Exception as error:
-          print(error)
+      # try:
+      async with session.get(url) as response:
+          print("fetching ", url)
+          return await response.text()
+      # except Exception as error:
+      #     print(error)
   def scrap_data(self, html) -> dict:
     soup = BeautifulSoup(html, "html5lib") # If this line causes an error, run 'pip install html5lib' or install html5lib
     #soup.prettify()
@@ -185,7 +186,7 @@ class JWIZARD:
             info = self.scrap_data(html)
             items[info["month"]] = info
       
-            with open('nwb.json', 'w') as f:
+            with open(os.path.join(os.getcwd(), f"meeting_parts/{self.pname}.json"), 'w') as f:
                 json.dump(items, f, indent=4)
 
 # weeklist=[x for x in range(36, 27)]

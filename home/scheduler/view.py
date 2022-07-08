@@ -1,7 +1,11 @@
 import asyncio
+from tkinter import Frame
+import aiohttp
+from ssl import SSLError
 from PyQt6.QtWidgets import (QMessageBox, QDialog, QVBoxLayout,
 QComboBox, QLabel, QFormLayout, QDialogButtonBox, 
-QHBoxLayout)
+QHBoxLayout, QTextBrowser, QScrollArea, QPushButton, QFrame, QLineEdit)
+from PyQt6.QtCore import (Qt)
 
 from home.home import BaseHomeWindow
 from home.ui_functions import Tweakfunctions
@@ -33,17 +37,50 @@ class Scheduler(BaseHomeWindow):
 
 		data = dialog.trange
 		try:
-			weeklist=[]
-			for i in range(data[0]+1, data[1]+1):
-				weeklist.append(i)
-			print(weeklist)
-			basepath="https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num}"
-			jwizard = JWIZARD(basepath=basepath,weeklist=weeklist)
-			asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-			asyncio.run(jwizard.main())
-		except Exception as e:
-			print(e)
+			if not os.path.exists(os.path.join(os.getcwd(), self.meeting_path, f"{dialog.combo.currentText()}.json")):
+				weeklist=[x for x in range(data[0]+1, data[1]+1)]
+				basepath="https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num}"
+				jwizard = JWIZARD(basepath=basepath,weeklist=weeklist, pname=dialog.combo.currentText())
+				asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+				asyncio.run(jwizard.main())
+		except aiohttp.client_exceptions.ClientConnectorError:
+			QMessageBox.critical(self, "Unexpected Error", "No Internet Connection. Please connect to the internet and try again")
+			return
+		except AttributeError:
+			QMessageBox.critical(self, "Unexpected Error", f"Curren month selected {dialog.combo.currentText()} is yet to have a complete program or has a known bug")		
 		
+		# self.scroll = QScrollArea()
+		# self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+		# self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+		# self.scroll.setWidgetResizable(True)
+		# self.scroll.setWidget(self.ui.clone_widget)
+
+		# get data from utils and create form
+		frame = QFrame()
+		frame.setObjectName("form_frame")
+
+		form = QFormLayout()
+		
+		all_parts = self.sutils.get_all_parts(dialog.combo.currentText())
+		for ap in all_parts:
+			label = QLabel(ap)
+			# label.setMaximumWidth(300)
+			label.setWordWrap(True)
+
+			input_field = QLineEdit()
+			# input_field.setMaximumSize(200, 30)
+			input_field.setStyleSheet("background-color: white;")
+			input_field.setObjectName(ap.replace(" ", "_"))
+
+			form.addRow(label, input_field)
+
+		frame.setLayout(form)
+		self.ui.clone_widget.layout().addWidget(frame)
+		self.button_box = QDialogButtonBox(self)
+		self.button_box.setStandardButtons(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+		# self.button_box.accepted.connect(self.accept)
+		# self.button_box.rejected.connect(self.reject)
+		self.ui.clone_widget.layout().addWidget(self.button_box)
 		
 class MonthDialog(QDialog):
 	def __init__(self, parent=None):

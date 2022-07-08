@@ -5,6 +5,7 @@ QWidget, QLabel, QLineEdit)
 
 from interface.home import Ui_MainWindow as HomeWindow
 from home.models import PublisherModel
+from home.scheduler.utils import SchedulerUtils
 
 class BaseHomeWindow(QMainWindow):
     def __init__(self, *args, **kwargs) -> None:
@@ -13,18 +14,20 @@ class BaseHomeWindow(QMainWindow):
         self.ui_tweaks = InterfaceTweaks
         self.congregation = Congregation
         self.scheduler = Scheduler
+        self.sutils = SchedulerUtils()
         self.reports = Reports
         self.table_model = PublisherModel()
     
         self.ui.setupUi(self)
 
         #set window defaults
+        self.meeting_path = "meeting_parts"
 
         #set button checkable
         self.ui_tweaks.button_checkable(self)
 
         #load all interface tweaks
-        self.ui_tweaks.set_clone_widget_type(self)
+        # self.ui_tweaks.set_clone_widget_type(self)
         self.ui_tweaks.toggle_title(self, "V1.0.0")
         self.ui_tweaks.home_view(self) # Load the home view by default
 

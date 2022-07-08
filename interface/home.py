@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.navbar_frame = QtWidgets.QFrame(self.frame)
-        self.navbar_frame.setMinimumSize(QtCore.QSize(350, 0))
+        self.navbar_frame.setMinimumSize(QtCore.QSize(100, 0))
         self.navbar_frame.setMaximumSize(QtCore.QSize(350, 16777215))
         self.navbar_frame.setStyleSheet("#navbar_frame {\n"
 "background-color: #24A19C;\n"
@@ -92,9 +92,26 @@ class Ui_MainWindow(object):
         self.main_frame.setObjectName("main_frame")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.main_frame)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.clone_widget = QtWidgets.QWidget(self.main_frame)
+        self.scrollArea = QtWidgets.QScrollArea(self.main_frame)
+        self.scrollArea.setStyleSheet("QScrollArea {\n"
+"border: none;\n"
+"}")
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scroll_area = QtWidgets.QWidget()
+        self.scroll_area.setGeometry(QtCore.QRect(0, 0, 600, 582))
+        self.scroll_area.setObjectName("scroll_area")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.scroll_area)
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_5.setSpacing(0)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.clone_widget = QtWidgets.QWidget(self.scroll_area)
         self.clone_widget.setObjectName("clone_widget")
-        self.verticalLayout_3.addWidget(self.clone_widget)
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.clone_widget)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.verticalLayout_5.addWidget(self.clone_widget)
+        self.scrollArea.setWidget(self.scroll_area)
+        self.verticalLayout_3.addWidget(self.scrollArea)
         self.horizontalLayout.addWidget(self.main_frame)
         self.verticalLayout.addWidget(self.frame)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -130,7 +147,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "NWBS MENU"))
+        self.label.setText(_translate("MainWindow", "NWB SCHEDULER MENU"))
         self.home_button.setText(_translate("MainWindow", "Home"))
         self.congregation_button.setText(_translate("MainWindow", "Congregation"))
         self.scheduler_button.setText(_translate("MainWindow", "Scheduler"))
