@@ -11,16 +11,16 @@ class SchedulerUtils:
 			blob = json.load(f)
 		full_program = list()
 		for dat, _dict in blob.items():
-			for title, part in _dict.items():
-				if title == "preaching":
-					for p in part:
-						full_program.append(p)
-					continue
-				if title == "middle_parts":
-					for p in part:
-						full_program.append(p)
-					continue
-				if title in self.keys:
-					continue
-				full_program.append(part)
+			# for title, part in _dict.items():
+			# 	if title == "preaching":
+			# 		for p in part:
+			# 			full_program.append(p)
+			# 		continue
+			# 	if title == "middle_parts":
+			# 		for p in part:
+			# 			full_program.append(p)
+			# 		continue
+			# 	if title in self.keys:
+			# 		continue
+			full_program.append(_dict)
 		return full_program
