@@ -1,7 +1,9 @@
 import sys
 
-from PyQt6.QtWidgets import (QMainWindow, QPushButton, QVBoxLayout, 
-QWidget, QLabel, QLineEdit)
+from PyQt6.QtWidgets import (QMainWindow)
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import (Qt)
+import logging
 
 from interface.home import Ui_MainWindow as HomeWindow
 from home.models import PublisherModel
@@ -12,13 +14,17 @@ class BaseHomeWindow(QMainWindow):
         super(BaseHomeWindow, self).__init__(*args, **kwargs)
         self.ui = HomeWindow()
         self.ui_tweaks = InterfaceTweaks
+        self.logger = logging.getLogger(__name__)
         self.congregation = Congregation
         self.scheduler = Scheduler
         self.sutils = SchedulerUtils()
         self.reports = Reports
         self.table_model = PublisherModel()
+
+        self.setWindowIcon(QIcon(":/icons/logo.ico"))
     
         self.ui.setupUi(self)
+        # self.ui.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         #set window defaults
         self.meeting_path = "meeting_parts"

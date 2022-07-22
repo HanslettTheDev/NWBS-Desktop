@@ -1,11 +1,12 @@
 import asyncio
 import time
+import random
 import aiohttp
 from ssl import SSLError
 from PyQt6.QtWidgets import (QMessageBox, QDialog, QVBoxLayout,
-QComboBox, QLabel, QFormLayout, QDialogButtonBox, 
+QComboBox, QLabel, QFormLayout, QDialogButtonBox, QWidget, 
 QHBoxLayout, QTextBrowser, QScrollArea, QPushButton, QFrame, QLineEdit, QCompleter)
-from PyQt6.QtCore import (Qt)
+from PyQt6.QtCore import (Qt, pyqtSignal, pyqtSlot)
 
 from home.home import BaseHomeWindow
 from home.ui_functions import Tweakfunctions
@@ -28,7 +29,99 @@ class Scheduler(BaseHomeWindow):
 			return (self.ui_tweaks.congregation_view(self), self.ui.congregation_button.setStyleSheet("background-color: #006699;"))
 
 	def _after_scheduler_check(self):
-		'''Call MonthDailog and get month and display'''
+		'''Call MonthDailog and get month and display else return reports'''
+		if os.listdir(os.path.join(os.getcwd(), "_programs")):
+			return self.scheduler.show_previous_programs(self)
+		
+		self.scheduler_popup(self)
+		
+	
+	'''
+	Functions Listed here are organized in a FirstCome FirstServe
+	Each function written that contains any click events or slots to other functions 
+	are directly written after it. check the documentation to see more details
+	'''
+	def show_previous_programs(self):
+		files = os.listdir(os.path.join(os.getcwd(), "_programs"))
+		# create a frame and a Horizontal layout and add items inside
+		random_colors = ["#1F4690", "#937DC2", "#377D71", "#2C3639", "#06283D", "#495C83", "#513252"]
+
+		button = QPushButton("Create New Program")
+		button.setObjectName("create_button")
+		button.setMinimumHeight(50)
+		button.setStyleSheet(f"background-color: {random.choice(random_colors)}; font-size: 20px;color:white;")
+		button.clicked.connect(lambda: self.scheduler.scheduler_popup(self))
+		self.ui.main_frame.layout().addWidget(button)
+		
+		for file in files:	
+			frame = QFrame()
+			frame.setLayout(QVBoxLayout())
+			frame.setObjectName("frame_" + str(files.index(file)))
+			frame.setMinimumSize(300,200)
+			frame.setStyleSheet('''
+			QPushButton {
+				background-color: #006699;
+				color: white;
+				font-size: 20px;
+			}
+			''')
+
+			label = QLabel(f"{file.split(' program.')[0]} program")
+			label.setWordWrap(True)
+			label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+			label.setMinimumHeight(200)
+			label.setStyleSheet(f"background-color: {random.choice(random_colors)}; color: white; text-align:center; font-size: 25px;")
+			
+			preview_button = QPushButton("Preview")
+			preview_button.setMinimumHeight(40)
+			preview_button.setCheckable(True)
+			preview_button.setObjectName("preview_button_{index}".format(index=files.index(file)))
+			preview_button.clicked.connect(lambda: self.scheduler.preview_program(self))
+			download_button = QPushButton("Download")
+			download_button.setMinimumHeight(40)
+			download_button.clicked.connect(lambda: self.scheduler.open_page(self))
+
+			frame.layout().addWidget(label)
+			frame.layout().addWidget(preview_button)
+			frame.layout().addWidget(download_button)
+
+			self.ui.clone_widget.layout().addWidget(frame)
+	
+	def preview_program(self):
+		text = ""
+		for button in self.ui.clone_widget.findChildren(QPushButton):
+			if button.isChecked():
+				button.setCheckable(False)
+				# get the QLabel from the parent widget
+				text += button.parent().findChild(QLabel).text()
+				# display the preview
+				break
+		# Launch the preview 
+		self.preview = Preview(None, text.split(" program")[0], 
+		self.sutils.create_program(text.split(" program")[0]))
+
+		# make the buttons checkable
+		for button in self.ui.clone_widget.findChildren(QPushButton):
+			button.setCheckable(True)
+	
+	def open_page(self):
+		text = ""
+		for button in self.ui.clone_widget.findChildren(QPushButton):
+			if button.isChecked():
+				button.setCheckable(False)
+				text = button.parent().findChild(QLabel).text()
+				break
+		
+		if text != "":
+			output = self.sutils.create_program(text.split(" program")[0])
+			self.sutils.open_page(text.split(" program")[0], output)
+			QMessageBox.information(self, "Downloading", "You will view this program in your web browser and then save it using the print function", QMessageBox.StandardButton.Ok)
+
+		# make the buttons checkable
+		for button in self.ui.clone_widget.findChildren(QPushButton):
+			button.setCheckable(True)		
+
+	def scheduler_popup(self):
 		dialog = MonthDialog(self)
 		reply = dialog.exec()
 		
@@ -52,7 +145,6 @@ class Scheduler(BaseHomeWindow):
 			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a known bug")
 		# self.scroll = QScrollArea()
 		# self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-		# self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 		# self.scroll.setWidgetResizable(True)
 		# self.scroll.setWidget(self.ui.clone_widget)
 
@@ -61,24 +153,64 @@ class Scheduler(BaseHomeWindow):
 			for p in parts:
 				yield p
 		
-		self.cloop = get_parts()	
+		self.cloop = get_parts()
+		self.month_programs = []
 			
 		def main():
 			try:
 				cloop = next(self.cloop)
 				pdialog = ProgramDialog(self, dialog.combo.currentText(), cloop)
 				if not pdialog.exec():
-					return self.scheduler.scheduler_view(self)
+					self.month_programs = []
+					return QMessageBox.information(self, "Program Cancelled", "Program Cancelled!")
+				self.month_programs.append(pdialog.form_data)
 				return main()
 			except StopIteration:
 				return
-		
 		main()
+		
+		if len(self.month_programs) != [] and len(self.month_programs) == len([x for x in self.sutils.get_all_parts(dialog.combo.currentText())]):
+			self.sutils.save_program(dialog.combo.currentText()+" program.json", self.month_programs)
+		
+		return self.scheduler.scheduler_view(self)	
+
 class ProgramDialog(QDialog):
 	def __init__(self, parent=None, month="", _dict:dict={}):
 		super().__init__(parent=parent)
 		self.month = month
 		self._dict = _dict
+		self.elders = []
+		self.all_publishers = []
+		self.ms_elders = []
+		self.elders_query = QSqlQuery()
+		self.publishers_query = QSqlQuery()
+		self.ms_elders_query = QSqlQuery()
+
+		# prepare all the queries needed
+		'''Prepare and launch all queries'''
+		try:
+			self.elders_query.prepare('''
+				SELECT first_name, middle_name, last_name, role FROM congregation_publishers WHERE role = 'Elder' 
+			''')
+			self.elders_query.exec()
+			while self.elders_query.next():
+				self.elders.append(" ".join(self.elders_query.value(i) for i in range(0,3)))
+
+			self.publishers_query.prepare('''
+				SELECT first_name, middle_name, last_name, role FROM congregation_publishers
+			''')
+			self.publishers_query.exec()
+			while self.publishers_query.next():
+				self.all_publishers.append(" ".join(self.publishers_query.value(i) for i in range(3)))
+			
+			self.ms_elders_query.prepare('''
+				SELECT first_name, middle_name, last_name, role FROM congregation_publishers WHERE role = 'Elder' OR role = ''
+			''')
+			self.ms_elders_query.exec()
+			while self.ms_elders_query.next():
+				self.ms_elders.append(" ".join(self.ms_elders_query.value(i) for i in range(3)))
+		except Exception as e:
+			return QMessageBox.critical(self, "Unexpected Error", f"Error: {e}")	
 
 		self.setWindowTitle("Scheduler | " + self.month)
 		self.layout = QVBoxLayout()
@@ -87,6 +219,22 @@ class ProgramDialog(QDialog):
 		self.setup_ui(self._dict)
 
 	def setup_ui(self, _dict):
+		''' Create different completers after inheriting from the lists gotten from the sql query '''
+		completer = QCompleter(self.elders)
+		completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+		completer.setFilterMode(Qt.MatchFlag.MatchContains)
+		completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
+
+		completer2 = QCompleter(self.all_publishers)
+		completer2.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+		completer2.setFilterMode(Qt.MatchFlag.MatchContains)
+		completer2.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
+
+		completer3 = QCompleter(self.ms_elders)
+		completer3.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+		completer3.setFilterMode(Qt.MatchFlag.MatchContains)
+		completer3.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
+
 		form = QFormLayout()
 
 		month_label = QLabel(f"Week of {_dict['month']} | {_dict['reading']}")
@@ -103,16 +251,21 @@ class ProgramDialog(QDialog):
 		
 		self.chairman_input = QLineEdit()
 		self.chairman_input.setObjectName("chairman_input")
+		self.chairman_input.setCompleter(completer)
 		self.group_label_input = QLineEdit()
 		self.group_label_input.setObjectName("group_input")
 		self.bible_reading_input = QLineEdit()
 		self.bible_reading_input.setObjectName("bible_reading_input")
+		self.bible_reading_input.setCompleter(completer2)
 		self.ffsee_bible_input = QLineEdit()
 		self.ffsee_bible_input.setObjectName("ffsee_bible")
+		self.ffsee_bible_input.setCompleter(completer3)
 		self.fflesson_input = QLineEdit()
 		self.fflesson_input.setObjectName("fflesson_input")
+		self.fflesson_input.setCompleter(completer3)
 		self.song_input = QLineEdit()
 		self.song_input.setObjectName("song_input")
+		self.song_input.setCompleter(completer2)
 
 		form.addRow(month_label)
 		form.addRow(group_label, self.group_label_input)
@@ -123,12 +276,15 @@ class ProgramDialog(QDialog):
 		form.addRow(ffsee_bible, self.ffsee_bible_input)
 		form.addRow(bible_reading, self.bible_reading_input)
 		form.addRow(live_as)
+		note = QLabel(f"Use (Student/Participant) format or (Student) if it's a talk or a First time video. e.g First Time: John Parker/Parker Smith")
+		note.setStyleSheet("color: #EB1D36;font-size: 12px")
+		form.addRow(note)
 
 		for index, parts in enumerate(_dict['preaching']):
 			label = QLabel(parts)
 			self.input_field = QLineEdit()
 			self.input_field.setObjectName(f"input_preaching_{str(index)}")
-		
+			self.input_field.setCompleter(completer2)
 			form.addRow(label, self.input_field)
 
 		# create a label for the Live as christians section
@@ -143,9 +299,10 @@ class ProgramDialog(QDialog):
 			label = QLabel(parts)
 			self.input_field = QLineEdit()
 			self.input_field.setObjectName(f"input_middle_parts_{str(index)}")
+			self.input_field.setCompleter(completer)
 			form.addRow(label, self.input_field)
 		
-		cong_bible_label = QLabel(f"Congregation Bible Study {_dict['book_study']}")
+		cong_bible_label = QLabel(f"Congregation Bible Study {_dict['book_study']}: E.G (Conductor/Reader)")
 		conc_song_label = QLabel(f"{_dict['opening_song']} and Closing Prayer")
 		self.cong_bible_input = QLineEdit()
 		self.cong_bible_input.setObjectName("closing_song_input")
@@ -166,18 +323,24 @@ class ProgramDialog(QDialog):
 		for widget in self.findChildren(QLineEdit):
 			if widget.text() == "":
 				return (QMessageBox.warning(self, "Error", "Please fill in all fields"), widget.setFocus(Qt.FocusReason.PopupFocusReason))
-		return True
-		# '''Get all inputs and check if any required was empty'''
-		# print(f'''
-		# results:
-		# 1. {self.group_label_input.text()}
-		# 2. {self.chairman_input.text()}
-		# 3. {self.bible_reading_input.text()}
-		# 4. {self.ffsee_bible_input.text()}
-		# 5. {self.fflesson_input.text()}
-		# 6. {self.song_input.text()}
-		# 7. {self.conc_song_input.text()}
-		# ''')
+		
+		self.form_data = {
+			f"{self._dict['month']}": {
+				"group": self.group_label_input.text(),
+				"chairman": self.chairman_input.text(),
+				"opening_prayer": self.song_input.text(),
+				"fine_fine_lesson": self.fflesson_input.text(),
+				"fine_fine_things_weh_you_see": self.ffsee_bible_input.text(),
+				"bible_reading": self.bible_reading_input.text(),
+				"preaching": [widget.text() for widget in self.findChildren(QLineEdit) if widget.objectName().startswith("input_preaching_")],
+				"middle_parts": [widget.text() for widget in self.findChildren(QLineEdit) if widget.objectName().startswith("input_middle_parts_")],
+				"cong_bible_study": self.cong_bible_input.text(),
+				"closing_prayer": self.conc_song_input.text()
+			}
+		}
+		
+		super().accept()
+
 class MonthDialog(QDialog):
 	def __init__(self, parent=None):
 		super().__init__(parent=parent)
@@ -210,9 +373,26 @@ class MonthDialog(QDialog):
 	def accept(self):
 		'''Get the months and split them up for processing'''
 		selected_months = self.combo.currentText()
-		
 		selected_months = selected_months.split("-")
 		self.trange = get_range(selected_months[0], selected_months[1])
 		super().accept()
 		
+class Preview(QWidget):
+	def __init__(self, parent=None, month="", html=""):
+		super().__init__(parent=parent)
+		self.setWindowTitle(f"NWBS Scheduler | {month} Preview")
+		self.html = html
+		self.setLayout(QVBoxLayout())
+		self.setMinimumSize(1000,700)
+		self.setup_ui()
+
+		self.show()
+		
+	def setup_ui(self):
+		self.preview = QTextBrowser()
+		self.preview.setHtml(self.html)
+		self.layout().addWidget(self.preview)
+		
+		
+	
 

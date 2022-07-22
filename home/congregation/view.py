@@ -33,9 +33,12 @@ class Congregation(BaseHomeWindow):
 		cong_button_2 = QPushButton("Test Congregation Database")
 		cong_button_2.setObjectName("cong_button_2")
 		cong_button_2.setMaximumHeight(50)
-		cong_button_1.clicked.connect(lambda: self.ui_tweaks.real_database(self))
-		cong_button_2.clicked.connect(lambda: self.ui_tweaks.fake_database(self))
-
+		try:
+			cong_button_1.clicked.connect(lambda: self.congregation.real_database(self))
+			cong_button_2.clicked.connect(lambda: self.congregation.fake_database(self))
+		except Exception as e:
+			self.logger.critical("Application crashed. Below is why:", exc_info=True)
+			sys.exit(1)
 		# add to layout
 		bframe.layout().addWidget(cong_button_1)
 		bframe.layout().addWidget(cong_button_2)
@@ -45,18 +48,19 @@ class Congregation(BaseHomeWindow):
 		self.congregation._after_home_view_load(self)
 
 	def fake_database(self):
-		header = "Do you want to proceed with a test database?"
-		message = "This is not a real congregation database."
-		detail = "This is just for testing purposes! You can change to a real congregation database later."
-		window_title = "Beta Congregation Database"
+		QMessageBox.information(None, "Notification", "These feature is disabled for the moment")
+		# header = "Do you want to proceed with a test database?"
+		# message = "This is not a real congregation database."
+		# detail = "This is just for testing purposes! You can change to a real congregation database later."
+		# window_title = "Beta Congregation Database"
 
-		reply = Tweakfunctions.toggle_message_box(self, header, message, window_title, detail)
+		# reply = Tweakfunctions.toggle_message_box(self, header, message, window_title, detail)
 
-		if reply == QMessageBox.StandardButton.Yes:
-			pass
-			# create_database
-		else:
-			pass
+		# if reply == QMessageBox.StandardButton.Yes:
+		# 	pass
+		# 	# create_database
+		# else:
+		# 	pass
 	
 	# List of functions that work after database is created and still under the InterfaceTweaks scope
 	def _after_home_view_load(self):

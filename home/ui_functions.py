@@ -1,14 +1,8 @@
-from PyQt6.QtWidgets import (QPushButton, QVBoxLayout, QLabel, 
-QTextBrowser, QWidget, QFrame, QMessageBox, QDialog, QDialogButtonBox, 
-QHBoxLayout, QLineEdit, QTableView, QAbstractItemView, QComboBox, 
-QFormLayout, QHeaderView)
-from PyQt6.QtCore import Qt, QSize
-from home import css
-# from PyQt6.QtGui import 
+from PyQt6.QtWidgets import (QPushButton, QVBoxLayout, 
+QTextBrowser, QWidget, QMessageBox)
 
 from home.home import BaseHomeWindow
 from home.html import html_home
-from home import css
 from home.utils import *
 
 class InterfaceTweaks(BaseHomeWindow):
@@ -22,6 +16,9 @@ class InterfaceTweaks(BaseHomeWindow):
 		if self.ui.clone_widget.findChildren(type):
 			for widgets in self.ui.clone_widget.findChildren(type):
 				widgets.deleteLater()
+		special_button = self.ui.main_frame.findChild(QPushButton, "create_button")
+		if special_button:
+			special_button.deleteLater()
 
 	def set_clone_widget_type(self):
 		if not self.ui.clone_widget.layout():
