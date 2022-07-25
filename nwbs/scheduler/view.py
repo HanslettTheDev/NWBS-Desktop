@@ -2,17 +2,36 @@ import asyncio
 import time
 import random
 import aiohttp
-from ssl import SSLError
+import logging
 from PyQt6.QtWidgets import (QMessageBox, QDialog, QVBoxLayout,
 QComboBox, QLabel, QFormLayout, QDialogButtonBox, QWidget, 
 QHBoxLayout, QTextBrowser, QScrollArea, QPushButton, QFrame, QLineEdit, QCompleter)
 from PyQt6.QtCore import (Qt, pyqtSignal, pyqtSlot)
 
-from home.home import BaseHomeWindow
-from home.ui_functions import Tweakfunctions
-from home.utils import *
-from home.scheduler.scrapper import JWIZARD
+from nwbs.home import BaseHomeWindow
+from nwbs.ui_functions import Tweakfunctions
+from nwbs.utils import *
+from nwbs.scheduler.scrapper import JWIZARD
 # from home.css import congregation_view_css
+
+import logging
+import random
+from datetime import datetime
+
+now = datetime.now()
+t = now.strftime("%Y-%m-%d")
+log_code = random.randint(10000, 99999)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(funcName)s: %(levelname)s: %(message)s')
+
+file_handler = logging.FileHandler(f'logs/scheduler/log_{t}_{log_code}.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 class Scheduler(BaseHomeWindow):
 	def scheduler_view(self):

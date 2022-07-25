@@ -3,10 +3,32 @@ QFrame, QMessageBox, QDialog, QDialogButtonBox,
 QHBoxLayout, QLineEdit, QTableView, QAbstractItemView, QComboBox, 
 QFormLayout, QHeaderView)
 
-from home.home import BaseHomeWindow
-from home.ui_functions import Tweakfunctions
-from home.utils import *
-from home import css
+from nwbs.home import BaseHomeWindow
+from nwbs.ui_functions import Tweakfunctions
+from nwbs.utils import *
+from nwbs import css
+
+import logging
+import random
+from datetime import datetime
+
+log_code = random.randint(10000, 99999)
+
+# create a variable to show current date and time in the log file
+
+now = datetime.now()
+t = now.strftime("%Y-%m-%d")
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(funcName)s: %(levelname)s: %(message)s')
+
+file_handler = logging.FileHandler(f'logs/congregation/log_{t}_{log_code}.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 class Congregation(BaseHomeWindow):
 	def congregation_view(self):
@@ -37,8 +59,9 @@ class Congregation(BaseHomeWindow):
 			cong_button_1.clicked.connect(lambda: self.congregation.real_database(self))
 			cong_button_2.clicked.connect(lambda: self.congregation.fake_database(self))
 		except Exception as e:
-			self.logger.critical("Application crashed. Below is why:", exc_info=True)
+			logger.exception("Application crashed. Here is the traceback:", exc_info=True)
 			sys.exit(1)
+		
 		# add to layout
 		bframe.layout().addWidget(cong_button_1)
 		bframe.layout().addWidget(cong_button_2)

@@ -1,13 +1,29 @@
 import os
 import json
 import webbrowser
+import logging
+import random
 
 from jinja2 import Environment, FileSystemLoader
 import pdfkit as pdf
-from home.html import default_program_html
-from home.css import pdf_css
+from nwbs.html import default_program_html
+from nwbs.css import pdf_css
+from datetime import datetime
 
+now = datetime.now()
+t = now.strftime("%Y-%m-%d")
+log_code = random.randint(10000, 99999)
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(funcName)s: %(levelname)s: %(message)s')
+
+file_handler = logging.FileHandler(f'logs/scheduler/utils/log_{t}_{log_code}.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 class SchedulerUtils:
 	def __init__(self):
@@ -32,6 +48,7 @@ class SchedulerUtils:
 				blob[key] = value
 				with open(os.path.join(os.getcwd(), self.program_path, filename), "w") as f:
 					json.dump(blob, f, indent=4)
+		logger.debug(f"Program saved: FileName>{filename}")
 		return True
 	
 	def create_program(self, program_name) -> str:
@@ -59,13 +76,15 @@ class SchedulerUtils:
 			global vid
 			vid = [x for x in d['preaching'][0].strip(":")]
 
-
-		template_env = Environment(loader=FileSystemLoader('templates'))
-		template_object = template_env.get_template(f'{program_name}.html')
-		output = template_object.render(programs=blob, data=blob2, zip=zip, zip2=enumerate, length=len,
-		preachingt=time_stands[0], middlepartst=time_stands[1], vid=vid)
-
-		return output
+		try:
+			template_env = Environment(loader=FileSystemLoader('templates'))
+			template_object = template_env.get_template(f'{program_name}.html')
+			output = template_object.render(programs=blob, data=blob2, zip=zip, zip2=enumerate, length=len,
+			preachingt=time_stands[0], middlepartst=time_stands[1], vid=vid)
+		except Exception as e:
+			logger.exception(f"An error occured while generating a program. See Error >>", exc_info=True)
+		else:
+			return output
 
 	def update_time(self, preaching_time:list, middle_time:list) -> tuple:
 		default_time = 2

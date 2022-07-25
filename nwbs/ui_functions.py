@@ -1,9 +1,10 @@
 from PyQt6.QtWidgets import (QPushButton, QVBoxLayout, 
 QTextBrowser, QWidget, QMessageBox)
 
-from home.home import BaseHomeWindow
-from home.html import html_home
-from home.utils import *
+from nwbs.home import BaseHomeWindow
+from nwbs.html import html_home
+from nwbs.utils import *
+
 
 class InterfaceTweaks(BaseHomeWindow):
 	def button_checkable(self):
