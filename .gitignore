@@ -4,4 +4,11 @@ __pycache__
 home/__pycache__
 interface/__pycache__
 login/__pycache__
-debug
+dist
+build
+home.ui
+login.ui
+logo.ico
+NWVS Client.exe.manifest
+NWVS Client.spec
+scripts
