@@ -370,7 +370,11 @@ default_program_html = '''
                         class="emph">({{ d['book_study'] }}):</a> (30 min.)</strong></td>
             <td><a class="right nwb-roles">Conductor/Reader:</a></td>
             <td><a>{{ program["cong_bible_study"].split("/")[0].split(" ")[0].upper() }}
+                    {% if program["cong_bible_study"].split("/")[0].split(" ")[1] %}
                     {{ program["cong_bible_study"].split("/")[0].split(" ")[1].capitalize() }}/
+                    {% else %}
+                    /
+                    {% endif %}
                     {% if program["cong_bible_study"].split("/")[1] %}
                     {{ program["cong_bible_study"].split("/")[1].split(" ")[0].upper()  }}
                     {{ program["cong_bible_study"].split("/")[1].split(" ")[1].capitalize() }}
