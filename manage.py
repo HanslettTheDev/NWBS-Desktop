@@ -2,7 +2,7 @@
 Module to manage the nwbs module
 
 Updater() >> Contains functions to check for updates and returns main window
-if updates or not.
+if updates or not
 '''
 
 import sys
