@@ -85,6 +85,7 @@ class Updater():
             
             logger.debug(f"NWBS Client updated: Version Number: {self.current_version}")
             
+            UpdaterMessages(sys.argv).success()
             return sys.exit(Launcher(sys.argv).exec())
         else:
             return sys.exit(Launcher(sys.argv).exec())
