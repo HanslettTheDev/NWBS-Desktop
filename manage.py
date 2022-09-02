@@ -2,7 +2,7 @@
 Module to manage the nwbs module
 
 Updater() >> Contains functions to check for updates and returns main window
-if updates or not
+if updates or not.
 '''
 
 import sys
@@ -43,7 +43,7 @@ file_handler2.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(file_handler2)
 
-PRODUCTION = True
+PRODUCTION = False
 
 if PRODUCTION:
     try:
