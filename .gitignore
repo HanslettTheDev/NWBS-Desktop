@@ -9,6 +9,5 @@ build
 home.ui
 login.ui
 logo.ico
-NWVS Client.exe.manifest
-NWVS Client.spec
-scripts
+NWBS Client.exe.manifest
+NWBS Client.spec
