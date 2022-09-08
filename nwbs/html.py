@@ -317,8 +317,6 @@ default_program_html = '''
                 {% if program["preaching"][step].split("/")[1].split(" ")[2] %}
                 {{ program["preaching"][step].split("/")[1].split(" ")[2].capitalize() }}{% endif %}
                 {% else %}
-                Hello<br>
-                World
                 {% endif %}
             </td>
             <td> {% if program["preaching"][step].split("/")[1] %}

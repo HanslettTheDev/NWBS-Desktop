@@ -43,7 +43,7 @@ file_handler2.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(file_handler2)
 
-PRODUCTION = False
+PRODUCTION = True
 
 if PRODUCTION:
     try:
