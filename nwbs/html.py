@@ -81,12 +81,12 @@ default_program_html = '''
     <style>
         @font-face {
             font-family: 'Gaduji';
-            src: url("fonts/Gadugi/gadugi-normal.ttf");
+            src: url("Gadugi/gadugi-normal.ttf");
         }
 
         @font-face {
             font-family: 'Gaduji-bold';
-            src: url("fonts/Gadugi/gadugi-bold.ttf");
+            src: url("Gadugi/gadugi-bold.ttf");
         }
 
         body {
@@ -250,8 +250,7 @@ default_program_html = '''
         <tr>
             <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
                     class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">{{ program["group"].split(" ")[0].upper() }}{% if program["group"].split(" ")[1] %}
-                {{ program["group"].split(" ")[1].upper() }}{% endif %} Group</td>
+            <td class="nwb-roles">{{ program["group"] }} Group</td>
             <td><a class="nwb-roles">Main Hall</a></td>
         </tr>
         <tr>
@@ -290,13 +289,15 @@ default_program_html = '''
                 {{ preachingt[step-1] }}
                 {% else %}
                 0{{ preachingt[step-1] }}
-                {% endif %}<i style="color: rgb(190,137,0);">&#9679;</i>
+                {% endif %}
+                <i style="color: rgb(190,137,0);">&#9679;</i>
                 <strong>{{ parts.strip(":") }}
                     {% if d['preaching_points'][step] == "" %}
                     {% else %}
                     (<a class="emph">{{ d['preaching_points'][step] }}</a>)
                     {% endif %}
                     : ({{ d['preaching_time'][step] }} min.)</strong>
+                <a class="right nwb-roles">Student:<br>Assistant:</a>
                 {% if parts.strip(":").endswith("Video") %}
 
                 {% elif length(vid) > 23 %}
@@ -304,7 +305,7 @@ default_program_html = '''
                 {% elif parts.strip(":") == "Talk" %}
 
                 {% else %}
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
+                
                 {% endif %}
             </td>
             <td>{% if program["preaching_s"] %}
@@ -376,6 +377,9 @@ default_program_html = '''
                     {% if program["cong_bible_study"].split("/")[1] %}
                     {{ program["cong_bible_study"].split("/")[1].split(" ")[0].upper()  }}
                     {{ program["cong_bible_study"].split("/")[1].split(" ")[1].capitalize() }}
+                    {% if program["cong_bible_study"].split("/")[1].split(" ")[2] %}
+                    {{ program["cong_bible_study"].split("/")[1].split(" ")[2].capitalize() }}
+                    {% endif %}
                     {% endif %}
                 </a></td>
         </tr>

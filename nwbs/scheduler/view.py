@@ -45,7 +45,7 @@ class Scheduler(BaseHomeWindow):
 			self.scheduler._after_scheduler_check(self)
 		else:
 			reply = QMessageBox.critical(None, "No Database Found!","You need to create a congregation database to proceed", QMessageBox.StandardButton.Close, QMessageBox.StandardButton.Close)
-			return (self.ui_tweaks.congregation_view(self), self.ui.congregation_button.setStyleSheet("background-color: #006699;"))
+			return (self.congregation.congregation_view(self), self.ui.congregation_button.setStyleSheet("background-color: #006699;"))
 
 	def _after_scheduler_check(self):
 		'''Call MonthDailog and get month and display else return reports'''
