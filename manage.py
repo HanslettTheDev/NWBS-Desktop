@@ -12,41 +12,38 @@ import random
 import logging
 import asyncio
 import zipfile
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import aiohttp
 import aiofiles
+import config
 
 from datetime import date, datetime
 from PyQt6.QtWidgets import (QApplication, QMessageBox)
 from importlib import import_module
 
 
-__version__ = getattr(import_module('scripts'), '__version__')
+def logCode() -> tuple[str, str]:
+    t = datetime.now().strftime("%Y-%m-%d")
+    log_code = random.randint(10000, 99999)
+    return t, str(log_code)
 
-now = datetime.now()
-t = now.strftime("%Y-%m-%d")
-log_code = random.randint(10000, 99999)
+if not os.path.exists(os.path.join(os.getcwd(), config.STORAGE_FOLDER)):
+    '''Create the dir for app usage'''
+    for sfn in config.STORAGE_FOLDER_NAMES:
+        os.makedirs(os.path.join(os.getcwd(), config.STORAGE_FOLDER, sfn))
 
+    for dfn in config.DEFAULT_FOLDER_NAMES:
+        os.makedirs(os.path.join(os.getcwd(), config.DEFAULT_FOLDER, dfn)
+)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logging.basicConfig(
+    filename=config.LOG_PATH + f"/__main__{logCode()[0]}_{logCode()[1]}.log",
+    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
+    level=logging.DEBUG
+    )
 
-formatter = logging.Formatter('%(funcName)s: %(levelname)s: %(message)s')
-
-file_handler = logging.FileHandler(f'logs/imports/_import_{t}_{log_code}.log')
-file_handler.setLevel(logging.ERROR)
-file_handler.setFormatter(formatter)
-
-file_handler2 = logging.FileHandler(f'logs/__main__log_{t}_{log_code}.log')
-file_handler2.setLevel(logging.DEBUG)
-file_handler2.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(file_handler2)
-
-PRODUCTION = False
-
-if PRODUCTION:
+if config.PRODUCTION:
     try:
+        __version__ = getattr(import_module('scripts'), '__version__')
         home = getattr(import_module('scripts.nwbs.home'), 'BaseHomeWindow')
         create_database = getattr(import_module('scripts.nwbs.utils'), 'create_database')
         create_months = getattr(import_module('scripts.nwbs.utils'), 'create_months')
@@ -59,8 +56,8 @@ else:
 
 class Updater():
     def __init__(self):
-        self.api = "https://api.github.com/repos/hanslettthedev/nwbs-desktop/releases/latest"
-        self.current_version = __version__
+        self.api = config.API_LINK
+        self.current_version = config.VERSION_NUMBER
 
     async def check_updates(self):
         try:
@@ -145,7 +142,7 @@ class Launcher(QApplication):
         super(Launcher, self).__init__(*args, **kwargs)
         
         self.the_json = f"{date.today().year}.json"
-        if not create_database("congregation.sqlite"):
+        if not create_database(config.DATABASE_NAME):
             sys.exit(1)
         
         if int(self.the_json.split(".")[0]) != date.today().year:
@@ -163,4 +160,5 @@ if __name__ == '__main__':
     # app = Launcher(sys.argv)
     # sys.exit(app.exec())
     updater = Updater()
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(updater.check_updates())

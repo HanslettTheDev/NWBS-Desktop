@@ -9,6 +9,7 @@ import calendar
 import json
 import sys
 import os
+import config
 from datetime import date
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 from PyQt6.QtWidgets import QMessageBox, QApplication
@@ -43,7 +44,7 @@ def database_exists():
 def create_database(database_name):
 	'''Creates and opens a database connection.'''
 	connection = QSqlDatabase.addDatabase('QSQLITE')
-	connection.setDatabaseName(os.path.join("./debug", database_name))
+	connection.setDatabaseName(os.path.join(config.FOLDER_REFERENCES["database"], database_name))
 
 	if not connection.open():
 		QMessageBox.critical(
