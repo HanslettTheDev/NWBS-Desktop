@@ -115,7 +115,7 @@ def create_months():
 def get_range(month:str, end_month:str):
 	count = 0
 	count2 = 0
-	with open(os.path.join(os.getcwd(),"years",f"{date.today().year}.json"), "r") as f:
+	with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"{date.today().year}.json"), "r") as f:
 		blob = json.load(f)
 		weeks = blob[month]
 	for bb, value in blob.items():

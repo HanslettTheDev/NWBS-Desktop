@@ -6,6 +6,8 @@ SCRAPPER_LINK = "https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num
 
 PRODUCTION = False
 
+CHECK_FOR_UPDATES_DAY = 15
+
 DEFAULT_FOLDER = "usr"
 STORAGE_FOLDER = "bin"
 

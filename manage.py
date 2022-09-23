@@ -84,9 +84,9 @@ class Updater():
 			logger.debug(f"NWBS Client updated: Version Number: {self.current_version}")
 			
 			UpdaterMessages(sys.argv).success()
-			return sys.exit(Launcher(sys.argv).exec())
+			return True
 		else:
-			return sys.exit(Launcher(sys.argv).exec())
+			return False
 
 	def check_version_numbers(self, latest_version:str):
 		cv = self.current_version.split("V")[1].split('.')
@@ -141,9 +141,12 @@ class UpdaterMessages(QApplication):
 class Launcher(QApplication):
 	def __init__(self, *args, **kwargs):
 		super(Launcher, self).__init__(*args, **kwargs)
+		self.update_day:int = config.CHECK_FOR_UPDATES_DAY
+		self.user_time:int = 15
 
-		# updater = Updater()
-		# asyncio.run(updater.check_updates())
+		if self.user_time == self.update_day:
+			updater = Updater()
+			asyncio.run(updater.check_updates())
 		
 		self.the_json = f"{date.today().year}.json"
 		if not create_database(config.DATABASE_NAME):
