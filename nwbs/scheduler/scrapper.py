@@ -1,4 +1,9 @@
-import json, asyncio, aiohttp, re, os
+import json 
+import asyncio 
+import aiohttp
+import re
+import os
+import config
 from bs4 import BeautifulSoup
 
 class JWIZARD:
@@ -186,7 +191,7 @@ class JWIZARD:
             info = self.scrap_data(html)
             items[info["month"]] = info
       
-            with open(os.path.join(os.getcwd(), f"meeting_parts/{self.pname}.json"), 'w') as f:
+            with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                 json.dump(items, f, indent=4)
 
 # weeklist=[x for x in range(36, 27)]

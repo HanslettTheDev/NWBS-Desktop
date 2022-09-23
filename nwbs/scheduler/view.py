@@ -128,7 +128,7 @@ class Scheduler(BaseHomeWindow):
 		
 		if text != "":
 			output = self.sutils.create_program(text.split(" program")[0])
-			self.sutils.open_page(text.split(" program")[0], output)
+			self.sutils.preview_page(text.split(" program")[0], output)
 			QMessageBox.information(self, "Downloading", "You will view this program in your web browser and then save it using the print function", QMessageBox.StandardButton.Ok)
 
 		# make the buttons checkable
@@ -145,11 +145,10 @@ class Scheduler(BaseHomeWindow):
 
 		data = dialog.trange
 		try:
-			if not os.path.exists(os.path.join(os.getcwd(), self.meeting_path, f"{dialog.combo.currentText()}.json")):
+			if not os.path.exists(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{dialog.combo.currentText()}.json")):
 				weeklist=[x for x in range(data[0]+1, data[1]+1)]
 				basepath=config.SCRAPPER_LINK
 				jwizard = JWIZARD(basepath=basepath,weeklist=weeklist, pname=dialog.combo.currentText())
-				asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 				asyncio.run(jwizard.main())
 		except aiohttp.client_exceptions.ClientConnectorError:
 			QMessageBox.critical(self, "Unexpected Error", "No Internet Connection. Please connect to the internet and try again")

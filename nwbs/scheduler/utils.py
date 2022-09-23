@@ -22,7 +22,7 @@ class SchedulerUtils:
 		self.keys = ("preaching_points", "preaching_time", "middle_parts_time", "book_study_box")
 	
 	def get_all_parts(self, filename:str) -> list:
-		with open(os.path.join(os.getcwd(), self.paths["meeting_path"], f"{filename}.json"), "r") as f:
+		with open(os.path.join(os.getcwd(), self.paths["meeting_parts"], f"{filename}.json"), "r") as f:
 			blob = json.load(f)
 		full_program = list()
 		for dat, _dict in blob.items():
@@ -65,7 +65,7 @@ class SchedulerUtils:
 			vid = [x for x in d['preaching'][0].strip(":")]
 
 		try:
-			template_env = Environment(loader=FileSystemLoader('templates'))
+			template_env = Environment(loader=FileSystemLoader(f'{os.path.join(os.getcwd(), self.paths["templates"])}'))
 			template_object = template_env.get_template(f'{program_name}.html')
 			output = template_object.render(programs=blob, data=blob2, zip=zip, zip2=enumerate, length=len,
 			preachingt=time_stands[0], middlepartst=time_stands[1], vid=vid)
@@ -91,7 +91,7 @@ class SchedulerUtils:
 		# mt_time.pop()
 		return pt_time,mt_time
 	
-	def open_page(self, filename:str, html):
+	def preview_page(self, filename:str, html):
 		file_path = os.path.join(os.getcwd(), self.paths["templates"], filename+".html")
 		with open(file_path, "w", encoding="utf-8") as f:
 			f.write(html)
