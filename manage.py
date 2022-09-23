@@ -142,7 +142,7 @@ class Launcher(QApplication):
 	def __init__(self, *args, **kwargs):
 		super(Launcher, self).__init__(*args, **kwargs)
 		self.update_day:int = config.CHECK_FOR_UPDATES_DAY
-		self.user_time:int = 15
+		self.user_time:int = date.today().day
 
 		if self.user_time == self.update_day:
 			updater = Updater()
