@@ -193,9 +193,3 @@ class JWIZARD:
       
             with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                 json.dump(items, f, indent=4)
-
-# weeklist=[x for x in range(36, 27)]
-# basepath="https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num}"
-# jwizard = JWIZARD(basepath=basepath,weeklist=weeklist)
-# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-# asyncio.run(jwizard.main())
