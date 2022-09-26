@@ -47,12 +47,12 @@ class addDialog(QDialog):
 		for publisher in (self.fname_input, self.mname_input, self.lname_input):
 			if not publisher.text():
 				if publisher.objectName() == "mname_input":
-					self.data.append(publisher.text())
+					self.data.append(publisher.text().strip())
 					continue
 				QMessageBox.critical(self, "Notification", f"You need to enter {publisher.objectName()} field")
 				self.data = None # reset data
 				return
-			self.data.append(publisher.text())
+			self.data.append(publisher.text().strip())
 
 		if not self.role.currentText():
 			QMessageBox.critical(self, "Notification", "You need to select a role")

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename=config.LOG_PATH + f"/_utils_{logCode()[0]}_{logCode()[1]}.log",
     format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.DEBUG
+    level=logging.ERROR
 )
 
 
@@ -56,10 +56,15 @@ class SchedulerUtils:
 		programs = [value for key, value in blob2.items()]
 
 		# do clean checks to get time for middle parts and preaching
+		time_stands_1 = []
+		time_stands_2 = []
 		for d in programs:
-			global time_stands
-			time_stands = self.update_time(d["preaching_time"], d["middle_parts_time"])
-			
+			pt_time, mp_time = {},{}
+			s = self.update_time(d["preaching_time"], d["middle_parts_time"])
+			pt_time[d["month"]], mp_time[d["month"]] = s[0], s[1]
+			time_stands_1.append(pt_time)
+			time_stands_2.append(mp_time)
+		
 		for d in data:
 			global vid
 			vid = [x for x in d['preaching'][0].strip(":")]
@@ -68,7 +73,7 @@ class SchedulerUtils:
 			template_env = Environment(loader=FileSystemLoader(f'{os.path.join(os.getcwd(), self.paths["templates"])}'))
 			template_object = template_env.get_template(f'{program_name}.html')
 			output = template_object.render(programs=blob, data=blob2, zip=zip, zip2=enumerate, length=len,
-			preachingt=time_stands[0], middlepartst=time_stands[1], vid=vid)
+			preachingt=time_stands_1, middlepartst=time_stands_2, vid=vid, tostring=str, toint=int)
 		except Exception as e:
 			logger.exception(f"An error occured while generating a program. See Error >>", exc_info=True)
 		else:
