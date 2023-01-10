@@ -15,3 +15,4 @@ NWBS Client.exe.manifest
 NWBS Client.spec
 *.rar
 .vscode
+set_update.py
