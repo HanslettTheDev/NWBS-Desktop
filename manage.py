@@ -14,8 +14,8 @@ import asyncio
 import config
 
 from datetime import date, datetime
-from PyQt6.QtWidgets import QApplication
 from importlib import import_module
+from PyQt6.QtWidgets import QApplication
 from _updater import Updater
 
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

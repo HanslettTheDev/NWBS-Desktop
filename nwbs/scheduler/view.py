@@ -161,8 +161,8 @@ class Scheduler(BaseHomeWindow):
 		self.backup = [] # stores the data to use for the previous items
 		self.count = 0
 
+
 		def main(has_pre_data:dict = {}):
-			print(self.count, len(parts), parts[self.count])
 			try:
 				pdialog = ProgramDialog(self, dialog.combo.currentText(), parts[self.count], self.count, has_pre_data)
 				if not pdialog.exec():
