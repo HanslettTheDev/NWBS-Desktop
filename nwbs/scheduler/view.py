@@ -22,9 +22,9 @@ import random
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.DEBUG
+	filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
+	format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
+	level=logging.DEBUG
 )
 
 class Scheduler(BaseHomeWindow):
@@ -48,12 +48,10 @@ class Scheduler(BaseHomeWindow):
 		
 		self.scheduler.scheduler_popup(self)
 		
+	# Functions Listed here are organized in a FirstCome FirstServe
+	# Each function written that contains any click events or slots to other functions 
+	# are directly written after it. check the documentation to see more details
 	
-	'''
-	Functions Listed here are organized in a FirstCome FirstServe
-	Each function written that contains any click events or slots to other functions 
-	are directly written after it. check the documentation to see more details
-	'''
 	def show_previous_programs(self):
 		files = os.listdir(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["generated_programs"]))
 		# create a frame and a Horizontal layout and add items inside
@@ -157,30 +155,38 @@ class Scheduler(BaseHomeWindow):
 			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a known bug")		
 		except IndexError:
 			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a known bug")
-		# self.scroll = QScrollArea()
-		# self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-		# self.scroll.setWidgetResizable(True)
-		# self.scroll.setWidget(self.ui.clone_widget)
-
-		def get_parts():
-			parts = self.sutils.get_all_parts(dialog.combo.currentText())
-			for p in parts:
-				yield p
 		
-		self.cloop = get_parts()
+		parts = self.sutils.get_all_parts(dialog.combo.currentText())
 		self.month_programs = []
-			
-		def main():
+		self.backup = [] # stores the data to use for the previous items
+		self.count = 0
+
+		def main(has_pre_data:dict = {}):
+			print(self.count, len(parts), parts[self.count])
 			try:
-				cloop = next(self.cloop)
-				pdialog = ProgramDialog(self, dialog.combo.currentText(), cloop)
+				pdialog = ProgramDialog(self, dialog.combo.currentText(), parts[self.count], self.count, has_pre_data)
 				if not pdialog.exec():
+					if pdialog.previous_clicked:
+						self.count -= 1
+						return main(self.backup[self.count])
+					# reset the counter and list
 					self.month_programs = []
+					self.count = 0
 					return QMessageBox.information(self, "Program Cancelled", "Program Cancelled!")
-				self.month_programs.append(pdialog.form_data)
+				
+				self.month_programs.insert(self.count, pdialog.form_data)
+				# Blah blah blah I know I duplicated It but I'm being safe here
+				# I don't want the month_programs variable to be tampered with before time
+				# This is a safety measure
+				self.backup.insert(self.count, pdialog.form_data)
+				self.count += 1
 				return main()
 			except StopIteration:
 				return
+			except IndexError:
+				return
+
+		# Call the recursive function 
 		main()
 		
 		if len(self.month_programs) != [] and len(self.month_programs) == len([x for x in self.sutils.get_all_parts(dialog.combo.currentText())]):

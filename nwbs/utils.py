@@ -91,7 +91,7 @@ def create_months():
 	calen = calendar.Calendar()
 	blob = {}
 	for month, value in months.items():
-		x = calen.monthdayscalendar(date.today().year, value)
+		x = calen.monthdayscalendar(2023, value)
 		verified = []
 		for value in x:
 			if value[0] == 0:
@@ -99,7 +99,7 @@ def create_months():
 			verified.append(value)
 
 		blob[month] = verified
-		with open(os.path.join(os.getcwd(), f"{date.today().year}.json"), "w") as f:
+		with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"2023.json"), "w") as f:
 			json.dump(blob, f, indent=2)
 
 # def check_weeks():
@@ -115,7 +115,7 @@ def create_months():
 def get_range(month:str, end_month:str):
 	count = 0
 	count2 = 0
-	with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"{date.today().year}.json"), "r") as f:
+	with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"2023.json"), "r") as f:
 		blob = json.load(f)
 		weeks = blob[month]
 	for bb, value in blob.items():

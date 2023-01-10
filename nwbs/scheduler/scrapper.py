@@ -1,3 +1,4 @@
+from datetime import date
 import json 
 import asyncio 
 import aiohttp
@@ -17,7 +18,7 @@ class JWIZARD:
   def get_all_urls(self):
     weeklist = self.weeklist
     for week in weeklist:
-        self.pathdict[week] = self.basepath.format(num=str(week))
+        self.pathdict[week] = self.basepath.format(num=str(week), year=str(date.today().year))
     return self.pathdict
           
   async def fetch_data(self,session, url):
@@ -55,7 +56,6 @@ class JWIZARD:
   
     BibleRdxs = SectionX2[0].select(".pGroup ul li .b")[-1].text.strip() #can be fine tuned to get only verse
     bible_reading_point = SectionX2[0].select(".pGroup ul li a")[-1].text.strip() 
-    
 
 
 
@@ -73,7 +73,6 @@ class JWIZARD:
       if h:
         nwb_parts.remove(h.group(0))
     
-    
       
     # get parts study point
     dump = []
@@ -89,8 +88,6 @@ class JWIZARD:
       else:
         nwb_parts_point.append("")
     
-
-
 
     # get parts time
     dump = []

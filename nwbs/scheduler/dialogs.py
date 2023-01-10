@@ -7,8 +7,11 @@ from nwbs.utils import get_range
 from PyQt6.QtSql import QSqlQuery
 from PyQt6.QtCore import (Qt)
 
+items = []
+
 class ProgramDialog(QDialog):
-	def __init__(self, parent=None, month="", _dict:dict={}):
+	current_index = 1
+	def __init__(self, parent=None, month="", _dict:dict={}, count:int = 0, pre_data:dict = {}):
 		super().__init__(parent=parent)
 		self.month = month
 		self._dict = _dict
@@ -18,6 +21,8 @@ class ProgramDialog(QDialog):
 		self.elders_query = QSqlQuery()
 		self.publishers_query = QSqlQuery()
 		self.ms_elders_query = QSqlQuery()
+		self.count = count
+		self.pre_data = pre_data
 
 		# prepare all the queries needed
 		'''Prepare and launch all queries'''
@@ -71,10 +76,12 @@ class ProgramDialog(QDialog):
 		completer3.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
 
 		form = QFormLayout()
+		
 
 		month_label = QLabel(f"Week of {_dict['month']} | {_dict['reading']}")
-		group_label = QLabel(f"Group:")
-		chairman_label = QLabel(f"Chairman:")
+		group_label = QLabel("Group:")
+		chairman_label = QLabel("Chairman:")
+		counselor_label = QLabel("Auxiliary Class Counsellor:")
 		song_label = QLabel(f"{_dict['opening_song']} and Opening Prayer")
 		fflesson_label = QLabel("Fine Fine Lesson from bible")
 		fflesson_label.setStyleSheet("background-color: rgb(87,90,93);color: white;font-size: 20px")
@@ -97,6 +104,8 @@ class ProgramDialog(QDialog):
 		self.chairman_input.setCompleter(completer3)
 		self.group_label_input = QLineEdit()
 		self.group_label_input.setObjectName("group_input")
+		self.counselor_input = QLineEdit()
+		self.counselor_input.setObjectName("counselor_input")
 		self.bible_reading_input = QLineEdit()
 		self.bible_reading_input.setObjectName("bible_reading_input")
 		self.bible_reading_input.setCompleter(completer2)
@@ -116,6 +125,7 @@ class ProgramDialog(QDialog):
 		form.addRow(month_label)
 		form.addRow(group_label, self.group_label_input)
 		form.addRow(chairman_label, self.chairman_input)
+		form.addRow(counselor_label, self.counselor_input)
 		form.addRow(song_label, self.song_input)
 		form.addRow(fflesson_label)
 		
@@ -184,6 +194,48 @@ class ProgramDialog(QDialog):
 		form.addWidget(self.button_box)
 		form.addWidget(self.btn)
 
+		# previous
+		self.btn2 = QPushButton("Previous")
+		self.btn2.clicked.connect(self.previous_page)
+		if self.count:
+			form.addWidget(self.button_box)
+			form.addWidget(self.btn2)
+		
+		# Now after adding the required buttons, we can then check if there exist a pre data
+		# If there is some pre data, populate the fields with the previous data
+
+		if self.pre_data:
+			# loop through the data and populate it in their fields
+			for key, value in self.pre_data.items():
+				# Set the respective text data for the previous data
+				self.group_label_input.setText(value["group"])
+				self.chairman_input.setText(value["chairman"])
+				self.counselor_input.setText(value["counsellor"])
+				self.song_input.setText(value["opening_prayer"])
+				self.fflesson_input.setText(value["fine_fine_lesson"])
+				self.ffsee_bible_input.setText(value["fine_fine_things_weh_you_see"])
+				self.bible_reading_input.setText(value["bible_reading"])
+				self.bible_reading_input_2.setText(value["bible_reading_secondhall"])
+				# Grab all the widgets
+				preaching_widgets = [widget for widget in self.findChildren(QLineEdit) if widget.objectName().startswith("input_preaching_")]
+				secondhall_widgets = [widget for widget in self.findChildren(QLineEdit) if widget.objectName().startswith("input_preaching_secondhall_")]
+				las_widgets = [widget for widget in self.findChildren(QLineEdit) if widget.objectName().startswith("input_middle_parts_")]
+				# preaching 
+				for widget, part in zip(preaching_widgets, value["preaching"]):
+					widget.setText(part)
+				# second hall preaching
+				for widget, part in zip(secondhall_widgets, value["preaching_secondhall"]):
+					widget.setText(part)
+				# Life as christians 
+				for widget, part in zip(las_widgets, value["middle_parts"]):
+					widget.setText(part)
+				# Congregation bible study and prayer
+				self.cong_bible_input.setText(value["cong_bible_study"])
+				self.conc_song_input.setText(value["closing_prayer"])	
+
+		# Set the previous clicked to false
+		self.previous_clicked = False
+
 	def autofill(self):
 		for widget in self.findChildren(QLineEdit):
 			if widget.objectName().startswith(("input_preaching_secondhall_", "input_preaching_")):
@@ -192,15 +244,22 @@ class ProgramDialog(QDialog):
 			widget.setText("Hello world")
 
 
+	def previous_page(self):
+		# Return a bool for the clicked event
+		self.previous_clicked = True
+		
+		self.reject()
+
 	def accept(self):
 		for widget in self.findChildren(QLineEdit):
 			if widget.text() == "":
 				return (QMessageBox.warning(self, "Error", "Please fill in all fields"), widget.setFocus(Qt.FocusReason.PopupFocusReason))
-		
+
 		self.form_data = {
 			f"{self._dict['month']}": {
 				"group": self.group_label_input.text().strip(),
 				"chairman": self.chairman_input.text().strip(),
+				"counsellor": self.counselor_input.text().strip(),
 				"opening_prayer": self.song_input.text().strip(),
 				"fine_fine_lesson": self.fflesson_input.text().strip(),
 				"fine_fine_things_weh_you_see": self.ffsee_bible_input.text().strip(),
@@ -247,8 +306,7 @@ class MonthDialog(QDialog):
 	
 	def accept(self):
 		'''Get the months and split them up for processing'''
-		selected_months = self.combo.currentText()
-		selected_months = selected_months.split("-")
+		selected_months = self.combo.currentText().split("-")
 		self.trange = get_range(selected_months[0], selected_months[1])
 		super().accept()
 		

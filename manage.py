@@ -33,6 +33,7 @@ if not os.path.exists(os.path.join(os.getcwd(), config.STORAGE_FOLDER)):
 	for dfn in config.DEFAULT_FOLDER_NAMES:
 		os.makedirs(os.path.join(os.getcwd(), config.DEFAULT_FOLDER, dfn)
 )
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(
 	filename=config.LOG_PATH + f"/__main__{logCode()[0]}_{logCode()[1]}.log",

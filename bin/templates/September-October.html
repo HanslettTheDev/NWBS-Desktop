@@ -149,55 +149,79 @@
         </div>
         <div class="line1"></div>
     </div>
-    
+    {% for d, program, pt, mt in zip(data.values(), programs.values(), preachingt, middlepartst) %}
     <table class="table" style="table-layout: fixed; page-break-after: always">
         <tr>
-            <td class="tdfix"><strong class="date">September 5-11</strong> | <strong
-                    class="emph">1 Kings 9-10</strong></td>
+            <td class="tdfix"><strong class="date">{{ d.month }}</strong> | <strong
+                    class="emph">{{ d['reading'] }}</strong></td>
             <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
+            <td style="width: 250px;"><strong>{{ program["chairman"].split(" ")[0].upper() }}
+                    {{ program["chairman"].split(" ")[1].capitalize() }}</strong></td>
         </tr>
         <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 10</strong></td>
+            <td class="tdfix"></td>
+            <td class="tdfix2"><a class="right nwb-roles">Auxiliary Class Counsellor:</a></td>
+            <td style="width: 250px;"><strong>{{ program["counsellor"].split(" ")[0].upper() }}
+                    {{ program["counsellor"].split(" ")[1].capitalize() }}</strong></td>
+        </tr>
+        <tr>
+            <td>6:30<i>&#9679;</i><strong class="emph">{{ d['opening_song'] }}</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
+            <td><a>{{ program["opening_prayer"].split(" ")[0].upper() }} {{ program["opening_prayer"].split(" ")[1].capitalize() }}
+                    {% if program["opening_prayer"].split(" ")[2] %}{{ program["opening_prayer"].split(" ")[2].capitalize() }}{% endif %}</a>
             </td>
         </tr>
         <tr>
             <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
             <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
+            <td><strong>{{ program["chairman"].split(" ")[0].upper() }}
+                    {{ program["chairman"].split(" ")[1].capitalize() }}</strong></td>
         </tr>
         <tr>
             <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
                     class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
+            <td class="nwb-roles">
+            {% if program["group"].split("/")[0] %}
+                {{ program["group"].split("/")[0].capitalize() }}
+                & {% if program["group"].split("/")[1] %}
+                    {{ program["group"].split("/")[1].capitalize() }}
+                {% endif %} Group
+            {% else %}
+                {{ program["group"].capitalize() }}
+            {% endif %}
+            </td>
             <td><a class="nwb-roles">Main Hall</a></td>
         </tr>
         <tr>
             <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">De Thank Jehovah for the Sense Wey E De Give</strong>(10 min.)</td>
+                    class="emph">{{ d['fine_fine_lesson'] }}</strong>(10 min.)</td>
             <td></td>
-            <td>HELLO World</td>
+            <td>{{ program["fine_fine_lesson"].split(" ")[0].upper() }} {{ program["fine_fine_lesson"].split(" ")[1].capitalize() }}</td>
         </tr>
         <tr>
             <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
                     Bible:</strong>(10 min.)</td>
             <td></td>
-            <td>HELLO World</td>
+            <td>{{ program["fine_fine_things_weh_you_see"].split(" ")[0].upper() }} {{ program["fine_fine_things_weh_you_see"].split(" ")[1].capitalize() }}</td>
         </tr>
         <tr>
             <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">5</a>): (4 min.)</strong>
+                        class="emph">{{ d['bible_reading_point'].strip("th study") }}</a>): (4 min.)</strong>
                 <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
+            <td>{% if program["bible_reading_secondhall"] %}
+                {{ program["bible_reading_secondhall"].split(" ")[0].upper() }}
+                {{ program["bible_reading_secondhall"].split(" ")[1].capitalize() }}
+                {% if program["bible_reading_secondhall"].split(" ")[2] %}
+                {{ program["bible_reading_secondhall"].split(" ")[2].capitalize() }}
+                {% endif %}
+                </td>
+            {% endif %}
+            <td>{{ program["bible_reading"].split(" ")[0].upper() }} 
+            {{ program["bible_reading"].split(" ")[1].capitalize() }}
+            {% if program["bible_reading"].split(" ")[2] %}
+                {{ program["bible_reading"].split(" ")[2].capitalize() }}
+            {% endif %}
+            </td>
         </tr>
         <tr>
             <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
@@ -205,905 +229,59 @@
             <td class="nwb-roles"></td>
             <td class="nwb-roles">Main Hall</td>
         </tr>
-        
+        {% for step, parts in zip2(d['preaching']) %}
         <tr>
-            <td>7:02
-                
+            <td>7:{% if step == 0 %}02
+                {% else %}{{ tostring(pt[d.month][step-1]).zfill(2) }}{% endif %}
                 <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time Video
-                    
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
+                <strong>{{ parts.strip(":") }}
+                    {% if d['preaching_points'][step] == "" %}
+                    {% else %}
+                    (<a class="emph">{{ d['preaching_points'][step] }}</a>)
+                    {% endif %}
+                    : ({{ d['preaching_time'][step] }} min.)</strong>
+                <a class="right nwb-roles">Student:<br>{% if parts.strip(":") == "Talk" %}{% else %}Assistant:{% endif %}</a>
+                {% if parts.strip(":").endswith("Video") %}
 
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:07
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">1</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:10
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">13</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 80</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>De Use JW.ORG Get Help for Everyday Life:
-                    (8 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:29
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Local Need:
-                    (7 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 18 point 6-7 and wetin this lesson teach, wetin you don learn, and wetin you fit plan to do):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">September 12-18</strong> | <strong
-                    class="emph">1 Kings 11-12</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 137</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">Think Well Before You Choose Who You Go Marry</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">10</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">3</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:05
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">11</a>)
-                    
-                    : (4 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:09
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Bible Study
-                    
-                    (<a class="emph">8</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 132</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Marriage Na for Life:
-                    (15 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 19 points 1-4):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">September 19-25</strong> | <strong
-                    class="emph">1 Kings 13-14</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 21</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">Value Wetin You Get and Know Where You Suppose Do Reach</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">10</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">7</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:05
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">9</a>)
-                    
-                    : (4 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:09
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Bible Study
-                    
-                    (<a class="emph">19</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 118</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Get Strong Heart Even Though Say Life Hard for You:
-                    (15 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 19 points 5-6 and wetin this lesson teach you, wetin you don learn, and wetin you fit plan to do):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">September 26–October 2</strong> | <strong
-                    class="emph">1 Kings 15-16</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 73</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">You Get Strong Heart Like Asa?</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">5</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">12</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:05
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">16</a>)
-                    
-                    : (4 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:09
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Bible Study
-                    
-                    (<a class="emph">6</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 133</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Soldiers of Christ Need to Get Strong heart:
-                    (5 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:26
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Things Wey Our Organization Don Do:
-                    (10 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 20):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">October 3-9</strong> | <strong
-                    class="emph">1 Kings 17-18</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 32</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">How Long E Go Take Wuna to Decide Wetin Wuna Want?</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">10</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time Video
-                    
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
+                {% elif length(vid) > 23 %}
 
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:07
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">12</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:10
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Talk
-                    
-                    (<a class="emph">13</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
+                {% elif parts.strip(":") == "Talk" %}
 
+                {% else %}
                 
+                {% endif %}
             </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
+            <td>{% if program["preaching_secondhall"][step].split("/")[1] %}
+                {{ program["preaching_secondhall"][step].split("/")[0].split(" ")[0].upper() }}
+                {{ program["preaching_secondhall"][step].split("/")[0].split(" ")[1].capitalize() }} <br>
+                {{ program["preaching_secondhall"][step].split("/")[1].split(" ")[0].upper() }}
+                {{ program["preaching_secondhall"][step].split("/")[1].split(" ")[1].capitalize() }} <br>
+                {% elif program["preaching_secondhall"][step] %}
+                {{ program["preaching_secondhall"][step].split(" ")[0].upper() }}
+                {{ program["preaching_secondhall"][step].split(" ")[1].capitalize() }}
+                    {% if program["preaching_secondhall"][step].split(" ")[2] %}
+                    {{ program["preaching_secondhall"][step].split(" ")[2].capitalize() }}
+                    {% endif %}
+                {% endif %}
             </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
+            <td> {% if program["preaching"][step].split("/")[1] %}
+                <a>{{ program["preaching"][step].split("/")[0].split(" ")[0].upper() }}
+                    {{ program["preaching"][step].split("/")[0].split(" ")[1].capitalize() }}
+                    {% if program["preaching"][step].split("/")[0].split(" ")[2] %}
+                    {{ program["preaching"][step].split("/")[0].split(" ")[2].capitalize() }}{% endif %}</a><br>
+                <a>{{ program["preaching"][step].split("/")[1].split(" ")[0].upper() }} 
+                    {{ program["preaching"][step].split("/")[1].split(" ")[1].capitalize() }} 
+                    {% if program["preaching"][step].split("/")[1].split(" ")[2] %}
+                    {{ program["preaching"][step].split("/")[1].split(" ")[2].capitalize() }}{% endif %}</a>
+                {% else %}
+                <a>{{ program["preaching"][step].split("/")[0].split(" ")[0].upper() }}
+                    {{ program["preaching"][step].split("/")[0].split(" ")[1].capitalize() }}
+                    {% if program["preaching"][step].split("/")[0].split(" ")[2] %}
+                    {{ program["preaching"][step].split("/")[0].split(" ")[2].capitalize() }}{% endif %}</a><br>
+                {% endif %}
             </td>
         </tr>
-        
+        {% endfor %}
         <tr>
             <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
                     class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
@@ -1113,840 +291,57 @@
         </tr>
         <tr>
             <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 111</strong></td>
+                    class="emph">{{ d['middle_song'] }}</strong></td>
             <td></td>
             <td></td>
         </tr>
-        
+        {% for step, lac in zip2(d['middle_parts']) %}
         <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Local Need:
-                    (15 min.)</strong></td>
+            <td>7:{% if step == 0 %}21{% else %}{{ tostring(mt[d.month][step-1]) }}{% endif %}
+                <i style="color: rgb(126,0,36);">&#9679;</i><strong>{{ lac.strip(":") }}:
+                    ({{ d['middle_parts_time'][step] }} min.)</strong></td>
             <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
+            <td><strong>{% if program["middle_parts"][step] %}{{ program["middle_parts"][step].split(" ")[0].upper() }}
+                    {{ program["middle_parts"][step].split(" ")[1].capitalize() }}{% endif %}</strong></td>
         </tr>
-        
+        {% endfor %}
         <tr>
             <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 21):</a> (30 min.)</strong></td>
+                        class="emph">({{ d['book_study'] }}):</a> (30 min.)</strong></td>
             <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
+            <td><a>{{ program["cong_bible_study"].split("/")[0].split(" ")[0].upper() }}
+                    {% if program["cong_bible_study"].split("/")[0].split(" ")[1] %}
+                    {{ program["cong_bible_study"].split("/")[0].split(" ")[1].capitalize() }}/
+                    {% else %}
+                    /
+                    {% endif %}
+                    {% if program["cong_bible_study"].split("/")[1] %}
+                    {{ program["cong_bible_study"].split("/")[1].split(" ")[0].upper()  }}
+                    {{ program["cong_bible_study"].split("/")[1].split(" ")[1].capitalize() }}
+                    {% if program["cong_bible_study"].split("/")[1].split(" ")[2] %}
+                    {{ program["cong_bible_study"].split("/")[1].split(" ")[2].capitalize() }}
+                    {% endif %}
+                    {% endif %}
                 </a></td>
         </tr>
         <tr>
             <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
             <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
+            <td><strong>{{ program["chairman"].split(" ")[0].upper() }}
+                    {{ program["chairman"].split(" ")[1].capitalize() }}</strong></td>
         </tr>
         <tr>
             <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
+            <td><a>{% if program["closing_prayer"] == "" %}{% else %}{{ program["closing_prayer"].split(" ")[0].upper() }} 
+            {{ program["closing_prayer"].split(" ")[1].capitalize() }}
+            {% if program["closing_prayer"].split(" ")[2] %}
+                {{ program["closing_prayer"].split(" ")[2].capitalize() }}
+            {% endif %}
+            {% endif %}</a></td>
         </tr>
     </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">October 10-16</strong> | <strong
-                    class="emph">1 Kings 19-20</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 33</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">Put Mind Say Jehovah Go Make Your Mind Come Down</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">12</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit Video
-                    
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:07
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">18</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:10
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Bible Study
-                    
-                    (<a class="emph">7</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 145</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Try to Always Dey Happy:
-                    (15 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 22):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">October 17-23</strong> | <strong
-                    class="emph">1 Kings 21-22</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 134</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">Copy How Jehovah De Use E Power</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">2</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">4</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:05
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">6</a>)
-                    
-                    : (4 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:09
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Talk
-                    
-                    (<a class="emph">14</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 116</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>“Love Dey Patient and Kind”:
-                    (10 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:31
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Local Need:
-                    (5 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 23):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">October 24-30</strong> | <strong
-                    class="emph">2 Kings 1-2</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 79</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">Better Example About Training</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">10</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">12</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:05
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">13</a>)
-                    
-                    : (4 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:09
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Bible Study
-                    
-                    (<a class="emph">14</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 53</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Things Wey Dey the Enjoy Life Now and Forever! Book Wey Fit Help You:
-                    (15 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 24):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
-    <table class="table" style="table-layout: fixed; page-break-after: always">
-        <tr>
-            <td class="tdfix"><strong class="date">October 31–November 6</strong> | <strong
-                    class="emph">2 Kings 3-4</strong></td>
-            <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>6:30<i>&#9679;</i><strong class="emph">Song 151</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World
-                    </a>
-            </td>
-        </tr>
-        <tr>
-            <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
-                    class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
-            <td class="nwb-roles">Hello world Group</td>
-            <td><a class="nwb-roles">Main Hall</a></td>
-        </tr>
-        <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">Carry Your Son Up</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
-            <td></td>
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">5</a>): (4 min.)</strong>
-                <a class="right nwb-roles">Student:</a></td>
-            <td>
-                HELLO
-                World</td>
-            
-            <td>HELLO World</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
-                    class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
-            <td class="nwb-roles">Main Hall</td>
-        </tr>
-        
-        <tr>
-            <td>7:02
-                
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>First Time
-                    
-                    (<a class="emph">17</a>)
-                    
-                    : (3 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:05
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Return Visit
-                    
-                    (<a class="emph">20</a>)
-                    
-                    : (4 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-                
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>7:09
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>Talk
-                    
-                    (<a class="emph">15</a>)
-                    
-                    : (5 min.)</strong>
-                <a class="right nwb-roles">Student:<br>Assistant:</a>
-                
-
-                
-            </td>
-            <td>
-                HELLO
-                World <br>
-                HANS
-                Dev <br>
-                
-            </td>
-            <td> 
-                <a>HELLO
-                    World
-                    </a><br>
-                <a>HANS
-                    Dev
-                    </a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="1" class="tdfix" style="background-color: rgb(126,0,36); height: 30px;"><a
-                    class="nwb-title heading">DE LIVE CHRISTIAN LIFE</a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7:17<i style="color: rgb(126,0,36);">&#9679;</i><strong
-                    class="emph">Song 129</strong></td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>7:21
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>Before Resurection Happen:
-                    (15 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        
-        <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
-                        class="emph">(lff lesson 25):</a> (30 min.)</strong></td>
-            <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>HELLO
-                    
-                    World/
-                    
-                    
-                </a></td>
-        </tr>
-        <tr>
-            <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
-            <td></td>
-            <td><strong>HELLO
-                    World</strong></td>
-        </tr>
-        <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
-            <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>HELLO World</a></td>
-        </tr>
-    </table><br>
-    
+    {% endfor %}
     <!--<h3>NB: All publishers wey e get assignment go attend meeting for <b>kingdom hall for that very week</b> for present
         thier assignment, and make them always check the attached program.</h3> -->
 </body>

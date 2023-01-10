@@ -2,7 +2,7 @@ VERSION_NUMBER = "V1.0.4"
 DATABASE_NAME = "congregation.sqlite"
 
 API_LINK = "https://api.github.com/repos/hanslettthedev/nwbs-desktop/releases/latest"
-SCRAPPER_LINK = "https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num}"
+SCRAPPER_LINK = "https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/{year}/{num}"
 
 PRODUCTION = False
 
