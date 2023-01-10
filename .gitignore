@@ -14,3 +14,4 @@ logo.ico
 NWBS Client.exe.manifest
 NWBS Client.spec
 *.rar
+.vscode
