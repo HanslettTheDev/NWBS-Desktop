@@ -53,8 +53,10 @@ class JWIZARD:
     
     ###section2
     MessageHd = SectionX2[0].select(".pGroup ul li a")[0].text.strip() #add pa a after li to eliminate time
-  
-    BibleRdxs = SectionX2[0].select(".pGroup ul li .b")[-1].text.strip() #can be fine tuned to get only verse
+
+
+    BibleRdxs = SectionX2[0].select(".pGroup ul li .so")[-1].text.replace("Bible Reading: (4 min.) ", "").split(" ") #can be fine tuned to get only verse
+    BibleRdxs = " ".join([BibleRdxs[0], BibleRdxs[1]])
     bible_reading_point = SectionX2[0].select(".pGroup ul li a")[-1].text.strip() 
 
 
@@ -170,7 +172,7 @@ class JWIZARD:
       'book_study_box': "", 
       'concluding_song': concluding_song,
     }
-    
+
     return nwb
 
   async def main(self):

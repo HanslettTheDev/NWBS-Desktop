@@ -257,14 +257,7 @@ default_program_html = '''
             <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
                     class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
             <td class="nwb-roles">
-            {% if program["group"].split("/")[0] %}
-                {{ program["group"].split("/")[0].capitalize() }}
-                & {% if program["group"].split("/")[1] %}
-                    {{ program["group"].split("/")[1].capitalize() }}
-                {% endif %} Group
-            {% else %}
-                {{ program["group"].capitalize() }}
-            {% endif %}
+            {{ program["group"].title() }}
             </td>
             <td><a class="nwb-roles">Main Hall</a></td>
         </tr>
@@ -316,7 +309,8 @@ default_program_html = '''
                     (<a class="emph">{{ d['preaching_points'][step] }}</a>)
                     {% endif %}
                     : ({{ d['preaching_time'][step] }} min.)</strong>
-                <a class="right nwb-roles">Student:<br>{% if parts.strip(":") == "Talk" %}{% else %}Assistant:{% endif %}</a>
+                <a class="right nwb-roles">Student:<br>{% if parts.strip(":") in ["Talk", "Return Visit Video", "First Time Video", "Memorial Invitation Video"] %}
+                {% else %}Assistant:{% endif %}</a>
                 {% if parts.strip(":").endswith("Video") %}
 
                 {% elif length(vid) > 23 %}
