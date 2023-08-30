@@ -243,8 +243,10 @@ default_program_html = '''
         <tr>
             <td>6:30<i>&#9679;</i><strong class="emph">{{ d['opening_song'] }}</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>{{ program["opening_prayer"].split(" ")[0].upper() }} {{ program["opening_prayer"].split(" ")[1].capitalize() }}
+            <td><a>{% if not program["opening_prayer"] %} {% else %}
+            {{ program["opening_prayer"].split(" ")[0].upper() }} {{ program["opening_prayer"].split(" ")[1].capitalize() }}
                     {% if program["opening_prayer"].split(" ")[2] %}{{ program["opening_prayer"].split(" ")[2].capitalize() }}{% endif %}</a>
+            {% endif %}
             </td>
         </tr>
         <tr>
@@ -381,12 +383,12 @@ default_program_html = '''
             <td><a class="right nwb-roles">Conductor/Reader:</a></td>
             <td><a>{{ program["cong_bible_study"].split("/")[0].split(" ")[0].upper() }}
                     {% if program["cong_bible_study"].split("/")[0].split(" ")[1] %}
-                    {{ program["cong_bible_study"].split("/")[0].split(" ")[1].capitalize() }}/
+                    {{ program["cong_bible_study"].split("/")[0].split(" ")[1].capitalize() }}
                     {% else %}
                     /
                     {% endif %}
                     {% if program["cong_bible_study"].split("/")[1] %}
-                    {{ program["cong_bible_study"].split("/")[1].split(" ")[0].upper()  }}
+                    / {{ program["cong_bible_study"].split("/")[1].split(" ")[0].upper()  }}
                     {{ program["cong_bible_study"].split("/")[1].split(" ")[1].capitalize() }}
                     {% if program["cong_bible_study"].split("/")[1].split(" ")[2] %}
                     {{ program["cong_bible_study"].split("/")[1].split(" ")[2].capitalize() }}

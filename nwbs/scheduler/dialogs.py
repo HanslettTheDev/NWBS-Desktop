@@ -1,11 +1,11 @@
 from PyQt6.QtWidgets import (QMessageBox, QDialog, QVBoxLayout,
 QComboBox, QLabel, QFormLayout, QDialogButtonBox, QWidget, 
- QTextBrowser, QLineEdit, QCompleter, QPushButton)
+ QTextBrowser, QLineEdit, QCompleter, QPushButton, QScrollArea)
 
 from nwbs.utils import get_range
 
 from PyQt6.QtSql import QSqlQuery
-from PyQt6.QtCore import (Qt)
+from PyQt6.QtCore import (Qt, QRect, QSize)
 
 items = []
 
@@ -51,8 +51,21 @@ class ProgramDialog(QDialog):
 			return QMessageBox.critical(self, "Unexpected Error", f"Error: {e}")	
 
 		self.setWindowTitle("Scheduler | " + self.month)
-		self.layout = QVBoxLayout()
-		self.setLayout(self.layout)
+		
+		# Scrollable dialogs 
+		self.scrollArea = QScrollArea(self)
+		self.scrollArea.setWidgetResizable(True)
+		self.scrollAreaWidgetContents = QWidget(self.scrollArea)
+		self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 780, 547))
+		self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+		self.verticalLayout = QVBoxLayout(self)		
+		self.verticalLayout.addWidget(self.scrollArea)
+
+		self.verticalLayoutScroll = QVBoxLayout(self.scrollAreaWidgetContents)
+
+		self.setLayout(self.verticalLayout)
+		self.setFixedSize(QSize(800, 700))
 		self.setStyleSheet('''''')
 
 		self.styles = "font-weight: bolder; color: red;"
@@ -183,7 +196,7 @@ class ProgramDialog(QDialog):
 		form.addRow(cong_bible_label, self.cong_bible_input)
 		form.addRow(conc_song_label, self.conc_song_input)
 		
-		self.layout.addLayout(form)
+		self.verticalLayoutScroll.addLayout(form)
 		self.button_box = QDialogButtonBox(self)
 		self.button_box.setStandardButtons(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
 		self.button_box.accepted.connect(self.accept)
