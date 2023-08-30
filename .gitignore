@@ -5,10 +5,14 @@ home/__pycache__
 interface/__pycache__
 login/__pycache__
 dist
+bin
+usr
 build
 home.ui
 login.ui
 logo.ico
-NWVS Client.exe.manifest
-NWVS Client.spec
-scripts
+NWBS Client.exe.manifest
+NWBS Client.spec
+*.rar
+.vscode
+set_update.py

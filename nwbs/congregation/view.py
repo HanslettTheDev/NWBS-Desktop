@@ -1,34 +1,26 @@
+import logging
+import config
+import sys
+
 from PyQt6.QtWidgets import (QPushButton, QVBoxLayout, QLabel, 
 QFrame, QMessageBox, QDialog, QDialogButtonBox, 
-QHBoxLayout, QLineEdit, QTableView, QAbstractItemView, QComboBox, 
-QFormLayout, QHeaderView)
-
+QHBoxLayout, QLineEdit, QTableView, QAbstractItemView,
+QHeaderView
+)
+from nwbs import logCode
 from nwbs.home import BaseHomeWindow
 from nwbs.ui_functions import Tweakfunctions
-from nwbs.utils import *
+from nwbs.congregation.dialogs import *
+from nwbs.utils import save_congname, database_exists
 from nwbs import css
 
-import logging
-import random
-from datetime import datetime
-
-log_code = random.randint(10000, 99999)
-
-# create a variable to show current date and time in the log file
-
-now = datetime.now()
-t = now.strftime("%Y-%m-%d")
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter('%(funcName)s: %(levelname)s: %(message)s')
-
-file_handler = logging.FileHandler(f'logs/congregation/log_{t}_{log_code}.log')
-file_handler.setLevel(logging.ERROR)
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
+logging.basicConfig(
+    filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
+    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
+    level=logging.ERROR
+)
 
 class Congregation(BaseHomeWindow):
 	def congregation_view(self):
@@ -181,67 +173,3 @@ class Congregation(BaseHomeWindow):
 
 		if reply == QMessageBox.StandardButton.Yes:
 			self.table_model.delete_publisher(row)
-			print(self.table_model.model.lastError().text())
-
-
-class addDialog(QDialog):
-	def __init__(self, parent=None):
-		super().__init__(parent=parent)
-		self.setWindowTitle("Add Publisher")
-		self.layout = QVBoxLayout()
-		self.setLayout(self.layout)
-
-		self.setup_ui()
-	
-	def setup_ui(self):
-		'''Setup the add publishers'''
-		self.fname_input = QLineEdit()
-		self.fname_input.setObjectName("name_input")
-		self.fname_input.setMinimumSize(300, 30)
-		self.mname_input = QLineEdit()
-		self.mname_input.setObjectName("mname_input")
-		self.mname_input.setMinimumSize(300, 30)
-		self.lname_input = QLineEdit()
-		self.lname_input.setObjectName("lname_input")
-		self.lname_input.setMinimumSize(300, 30)
-		self.role = QComboBox()
-		self.role.setObjectName("role_input")
-		self.role.setMinimumSize(300, 30)
-		self.role.addItems(["Publisher","Ministerial Servant", "Elder"])
-
-		layout = QFormLayout()
-		layout.addRow("First Name", self.fname_input)
-		layout.addRow("Middle Name (Optional)", self.mname_input)
-		layout.addRow("Last Name", self.lname_input)
-		layout.addRow("Role", self.role)
-
-		self.layout.addLayout(layout)
-		self.button_box = QDialogButtonBox(self)
-		self.button_box.setStandardButtons(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-		self.button_box.accepted.connect(self.accept)
-		self.button_box.rejected.connect(self.reject)
-		self.layout.addWidget(self.button_box)
-	
-	def accept(self):
-		'''Accept data and cary validations'''
-		self.data = []
-		for publisher in (self.fname_input, self.mname_input, self.lname_input):
-			if not publisher.text():
-				if publisher.objectName() == "mname_input":
-					self.data.append(publisher.text())
-					continue
-				QMessageBox.critical(self, "Notification", f"You need to enter {publisher.objectName()} field")
-				self.data = None # reset data
-				return
-			self.data.append(publisher.text())
-
-		if not self.role.currentText():
-			QMessageBox.critical(self, "Notification", "You need to select a role")
-			self.data = None
-		
-		self.data.append(self.role.currentText())
-
-		if not self.data:
-			return
-
-		super().accept()

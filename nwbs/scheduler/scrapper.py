@@ -1,4 +1,10 @@
-import json, asyncio, aiohttp, re, os
+from datetime import date
+import json 
+import asyncio 
+import aiohttp
+import re
+import os
+import config
 from bs4 import BeautifulSoup
 
 class JWIZARD:
@@ -12,7 +18,7 @@ class JWIZARD:
   def get_all_urls(self):
     weeklist = self.weeklist
     for week in weeklist:
-        self.pathdict[week] = self.basepath.format(num=str(week))
+        self.pathdict[week] = self.basepath.format(num=str(week), year=str(date.today().year))
     return self.pathdict
           
   async def fetch_data(self,session, url):
@@ -47,10 +53,11 @@ class JWIZARD:
     
     ###section2
     MessageHd = SectionX2[0].select(".pGroup ul li a")[0].text.strip() #add pa a after li to eliminate time
-  
-    BibleRdxs = SectionX2[0].select(".pGroup ul li .b")[-1].text.strip() #can be fine tuned to get only verse
+
+
+    BibleRdxs = SectionX2[0].select(".pGroup ul li .so")[-1].text.replace("Bible Reading: (4 min.) ", "").split(" ") #can be fine tuned to get only verse
+    BibleRdxs = " ".join([BibleRdxs[0], BibleRdxs[1]])
     bible_reading_point = SectionX2[0].select(".pGroup ul li a")[-1].text.strip() 
-    
 
 
 
@@ -68,7 +75,6 @@ class JWIZARD:
       if h:
         nwb_parts.remove(h.group(0))
     
-    
       
     # get parts study point
     dump = []
@@ -84,8 +90,6 @@ class JWIZARD:
       else:
         nwb_parts_point.append("")
     
-
-
 
     # get parts time
     dump = []
@@ -168,7 +172,7 @@ class JWIZARD:
       'book_study_box': "", 
       'concluding_song': concluding_song,
     }
-    
+
     return nwb
 
   async def main(self):
@@ -186,11 +190,5 @@ class JWIZARD:
             info = self.scrap_data(html)
             items[info["month"]] = info
       
-            with open(os.path.join(os.getcwd(), f"meeting_parts/{self.pname}.json"), 'w') as f:
+            with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                 json.dump(items, f, indent=4)
-
-# weeklist=[x for x in range(36, 27)]
-# basepath="https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/2022/{num}"
-# jwizard = JWIZARD(basepath=basepath,weeklist=weeklist)
-# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-# asyncio.run(jwizard.main())
