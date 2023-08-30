@@ -218,6 +218,8 @@ default_program_html = '''
 </head>
 
 <body>
+    {% for d, program, pt, mt in zip(data.values(), programs.values(), preachingt, middlepartst) %}
+    {% if preachingt.index(pt) % 2 == 0 %}
     <div class="header">
         <div class="titles">
             <h4>BONENDALE PIDGIN</h4>
@@ -225,7 +227,9 @@ default_program_html = '''
         </div>
         <div class="line1"></div>
     </div>
-    {% for d, program, pt, mt in zip(data.values(), programs.values(), preachingt, middlepartst) %}
+    {% else %}
+
+    {% endif %}
     <table class="table" style="table-layout: fixed; page-break-after: always">
         <tr>
             <td class="tdfix"><strong class="date">{{ d.month }}</strong> | <strong
