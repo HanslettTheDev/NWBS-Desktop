@@ -6,7 +6,7 @@ import config
 
 from jinja2 import Environment, FileSystemLoader
 from nwbs import logCode
-from nwbs.html import default_program_html
+from nwbs.html import default_program_html, program_setup
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -39,7 +39,7 @@ class SchedulerUtils:
 		logger.debug(f"Program saved: FileName > {filename}.json")
 		return True
 	
-	def create_program(self, program_name) -> str:
+	def create_program(self, program_name, is_schedule:bool = False) -> str:
 		# Get the data and programs from the json and pass it as objects to the txt
 		with open(os.path.join(os.getcwd(), self.paths["generated_programs"], program_name + " program.json"), "r", encoding="utf-8") as f:
 			blob = json.load(f)
@@ -50,6 +50,10 @@ class SchedulerUtils:
 		# create the file and write the defaults to it
 		with open(os.path.join(os.getcwd(), self.paths["templates"], program_name + ".html"), "w") as f:
 			f.write(default_program_html)
+		
+		if is_schedule:
+			with open(os.path.join(os.getcwd(), self.paths["templates"], program_name + " scheduler.html"), "w") as f:
+				f.write(program_setup)
 		
 		# get only the dicts from the json
 		data = [value for key, value in blob.items()]
@@ -71,14 +75,20 @@ class SchedulerUtils:
 
 		try:
 			template_env = Environment(loader=FileSystemLoader(f'{os.path.join(os.getcwd(), self.paths["templates"])}'))
-			template_object = template_env.get_template(f'{program_name}.html')
-			output = template_object.render(programs=blob, data=blob2, zip=zip, zip2=enumerate, length=len,
-			preachingt=time_stands_1, middlepartst=time_stands_2, vid=vid, tostring=str, toint=int)
-		except Exception as e:
-			logger.exception(f"An error occured while generating a program. See Error >>", exc_info=True)
-		else:
+			template_object = None
+			if not is_schedule:
+				template_object = template_env.get_template(f'{program_name}.html')
+			else:
+				template_object = template_env.get_template(f'{program_name} scheduler.html')
+			output = template_object.render(
+				programs=blob, data=blob2, zip=zip, zip2=enumerate, 
+				length=len, preachingt=time_stands_1, middlepartst=time_stands_2, 
+				vid=vid, tostring=str, toint=int
+			)
 			logger.debug("Templates successfully generated")
 			return output
+		except Exception as e:
+			logger.exception(f"An error occured while generating a program. See Error >>", exc_info=True)
 
 	def update_time(self, preaching_time:list, middle_time:list) -> tuple:
 		default_time = 2

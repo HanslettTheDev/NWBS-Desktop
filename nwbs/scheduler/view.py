@@ -127,7 +127,9 @@ class Scheduler(BaseHomeWindow):
 		
 		if text != "":
 			output = self.sutils.create_program(text.split(" program")[0])
+			output2 = self.sutils.create_program(text.split(" program")[0], is_schedule=True)
 			self.sutils.preview_page(text.split(" program")[0], output)
+			self.sutils.preview_page(text.split(" program")[0] + " scheduler", output2) # for the schedule to fill names
 			QMessageBox.information(self, "Downloading", "You will view this program in your web browser and then save it using the print function", QMessageBox.StandardButton.Ok)
 
 		# make the buttons checkable
@@ -154,10 +156,12 @@ class Scheduler(BaseHomeWindow):
 			return
 		except AttributeError:
 			logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
-			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a known bug")		
+			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")		
+			return
 		except IndexError:
 			logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
-			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a known bug")
+			QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")
+			return 
 		
 		parts = self.sutils.get_all_parts(dialog.combo.currentText())
 		self.month_programs = []
