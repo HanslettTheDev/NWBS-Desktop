@@ -241,8 +241,12 @@ default_program_html = '''
         <tr>
             <td class="tdfix"></td>
             <td class="tdfix2"><a class="right nwb-roles">Auxiliary Class Counsellor:</a></td>
-            <td style="width: 250px;"><strong>{{ program["counsellor"].split(" ")[0].upper() }}
-                    {{ program["counsellor"].split(" ")[1].capitalize() }}</strong></td>
+            <td style="width: 250px;"><strong>
+            {% if program["counsellor"].split(" ")[0] != "" %}
+             {{ program["counsellor"].split(" ")[0].upper() }}
+                    {{ program["counsellor"].split(" ")[1].capitalize() }}           
+            {% endif %}        
+            </strong></td>
         </tr>
         <tr>
             <td>6:30<i>&#9679;</i><strong class="emph">{{ d['opening_song'] }}</strong></td>
