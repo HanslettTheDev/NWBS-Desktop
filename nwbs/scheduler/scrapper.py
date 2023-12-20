@@ -166,7 +166,6 @@ class JWIZARD:
             'concluding_song': concluding_song,
         }
 
-        print(nwb)
         return nwb
 
     async def main(self):
@@ -188,7 +187,7 @@ class JWIZARD:
                     json.dump(items, f, indent=4)
 
 
-weeklist=[x for x in range(1, 10)]
-jwizard = JWIZARD(basepath=config.SCRAPPER_LINK,weeklist=weeklist)
-asyncio.run(jwizard.main())
+#weeklist=[x for x in range(1, 10)]
+#jwizard = JWIZARD(basepath=config.SCRAPPER_LINK,weeklist=weeklist)
+#asyncio.run(jwizard.main())
 
