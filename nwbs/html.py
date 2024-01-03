@@ -346,7 +346,11 @@ default_program_html = '''
             </td>
             <td> {% if program["preaching"][step].split("/")[1] %}
                 <a>{{ program["preaching"][step].split("/")[0].split(" ")[0].upper() }}
+                    {% if program["preaching"][step].split("/")[0].split(" ")[1] %}
                     {{ program["preaching"][step].split("/")[0].split(" ")[1].capitalize() }}
+                    {% else %}
+
+                    {% endif %}
                     {% if program["preaching"][step].split("/")[0].split(" ")[2] %}
                     {{ program["preaching"][step].split("/")[0].split(" ")[2].capitalize() }}{% endif %}</a><br>
                 <a>{{ program["preaching"][step].split("/")[1].split(" ")[0].upper() }} 
@@ -355,7 +359,11 @@ default_program_html = '''
                     {{ program["preaching"][step].split("/")[1].split(" ")[2].capitalize() }}{% endif %}</a>
                 {% else %}
                 <a>{{ program["preaching"][step].split("/")[0].split(" ")[0].upper() }}
+                    {% if program["preaching"][step].split("/")[0].split(" ")[1] %}
                     {{ program["preaching"][step].split("/")[0].split(" ")[1].capitalize() }}
+                    {% else %}
+                    
+                    {% endif %}
                     {% if program["preaching"][step].split("/")[0].split(" ")[2] %}
                     {{ program["preaching"][step].split("/")[0].split(" ")[2].capitalize() }}{% endif %}</a><br>
                 {% endif %}

@@ -1,11 +1,12 @@
-from datetime import date
 import json 
 import asyncio 
 import aiohttp
-import re
 import os
 import config
+
 from bs4 import BeautifulSoup
+from nwbs.scheduler.utils import MeetingParser
+
 
 class JWIZARD:
     def __init__(self, basepath = "", weeklist=[], month=[], pname="nwb"):
@@ -181,6 +182,7 @@ class JWIZARD:
 
             for html in htmls:
                 info = self.scrap_data(html)
+                info = MeetingParser(program=info, week_range=info["month"]).start_parsing()
                 items[info["month"]] = info
 
                 with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:

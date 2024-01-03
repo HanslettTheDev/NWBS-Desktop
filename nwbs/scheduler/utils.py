@@ -16,6 +16,128 @@ logging.basicConfig(
 )
 
 
+class MeetingParser:
+    def __init__(self, program: dict, week_range: str):
+        self.program = program
+        self.week_range = week_range
+
+    def capitalize(self, name: str) -> str:
+        """ It automatically uppercases the first name and capitalizes the
+        the other names
+        """
+        if name == "" or name == " ":
+            return name
+
+        
+        splitted_name = name.split(" ")
+        cap_name = []
+        for sn in splitted_name:
+            if splitted_name.index(sn) == 0:
+                cap_name.append(sn.upper())
+                continue
+            cap_name.append(sn.capitalize())
+        return " ".join(cap_name)
+
+    def preaching_capitalize(self, name: str) -> dict:
+        """Handles capitalizing cases only with strings from preaching section"""
+        if name == "" or name == " ": 
+            return {"student": "", "assistant": ""}
+        
+        splitted_name = name.split("/")
+        
+        if len(splitted_name) <= 1:
+            return {
+                "student": self.capitalize(splitted_name[0]),
+                "assistant": ""
+            }
+        
+        return {
+            "student": self.capitalize(splitted_name[0]),
+            "assistant": self.capitalize(splitted_name[1])
+        }
+        
+    
+    def start_parsing(self):
+        """ Initiates the parser """
+        # set the chairman name
+        self.program[self.week_range]["chairman"] = self.capitalize(
+            self.program[self.week_range]["chairman"]
+        )
+        # set the auxillary class counsellor
+        self.program[self.week_range]["counsellor"] = self.capitalize(
+            self.program[self.week_range]["counsellor"]
+        )
+        # set the opening prayer
+        self.program[self.week_range]["opening_prayer"] = self.capitalize(
+            self.program[self.week_range]["opening_prayer"]
+        )
+        # set fine fine lesson
+        self.program[self.week_range]["fine_fine_lesson"] = self.capitalize(
+            self.program[self.week_range]["fine_fine_lesson"]
+        )
+        # set fine fine things wey you See
+        self.program[self.week_range]["fine_fine_things_weh_you_see"] = self.capitalize(
+            self.program[self.week_range]["fine_fine_things_weh_you_see"]
+        )
+        # set bible reading main hall
+        self.program[self.week_range]["bible_reading"] = self.capitalize(
+            self.program[self.week_range]["bible_reading"]
+        )
+        # set bible reading second hall
+        self.program[self.week_range]["bible_reading_secondhall"] = self.capitalize(
+            self.program[self.week_range]["bible_reading_secondhall"]
+        )
+        # set preaching section
+        self.preaching()
+        # set di live christian life
+        self.christian_life()
+
+        return self.program
+
+    def preaching(self):
+        """ Capitalizes the names but returns a new dict object 
+        for easier manipulation in the jinja template
+        """
+        
+        # Main hall
+        participants = list()
+
+        for participant in self.program[self.week_range]["preaching"]:
+            participants.append(self.preaching_capitalize(participant))
+
+        # Second hall
+        participants_sh = list()
+
+        for participant in self.program[self.week_range]["preaching_secondhall"]:
+            participants_sh.append(self.preaching_capitalize(participant))
+
+        # replace the existing list with the new format
+        self.program[self.week_range]["preaching"] = participants
+        self.program[self.week_range]["preaching_secondhall"] = participants_sh
+
+    def christian_life(self):
+        """Capitalize names found in di live christian life section"""
+
+        speakers = list()
+
+        for speaker in self.program[self.week_range]["middle_parts"]:
+            speakers.append(self.capitalize(speaker))
+
+        # replace the existing list with the parsed names
+        self.program[self.week_range]["middle_parts"] = speakers
+
+        # Congregation bible study
+        self.program[self.week_range]["cong_bible_study"] = self.preaching_capitalize(
+            self.program[self.week_range]["cong_bible_study"]
+        )
+
+        # Closing prayer
+        self.program[self.week_range]["closing_prayer"] = self.capitalize(
+            self.program[self.week_range]["closing_prayer"]
+        )
+
+
+
 class SchedulerUtils:
 	def __init__(self):
 		self.paths = config.FOLDER_REFERENCES
@@ -39,7 +161,7 @@ class SchedulerUtils:
 		logger.debug(f"Program saved: FileName > {filename}.json")
 		return True
 	
-	def create_program(self, program_name, is_schedule:bool = False) -> str:
+	def create_program(self, program_name, is_schedule:bool = False):
 		# Get the data and programs from the json and pass it as objects to the txt
 		with open(os.path.join(os.getcwd(), self.paths["generated_programs"], program_name + " program.json"), "r", encoding="utf-8") as f:
 			blob = json.load(f)
