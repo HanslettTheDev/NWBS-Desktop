@@ -148,8 +148,7 @@ class Scheduler(BaseHomeWindow):
 		try:
 			if not os.path.exists(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{dialog.combo.currentText()}.json")):
 				weeklist=[x for x in range(data[0]+1, data[1]+1)]
-				# weeklist.pop(4)
-				jwizard = JWIZARD(basepath=config.SCRAPPER_LINK,weeklist=weeklist, pname=dialog.combo.currentText())
+				jwizard = JWIZARD(basepath=config.SCRAPPER_LINK, weeklist=weeklist, pname=dialog.combo.currentText())
 				asyncio.run(jwizard.main())
 		except aiohttp.client_exceptions.ClientConnectorError:
 			QMessageBox.critical(self, "Unexpected Error", "No Internet Connection. Please connect to the internet and try again")

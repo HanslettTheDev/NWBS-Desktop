@@ -235,33 +235,26 @@ default_program_html = '''
             <td class="tdfix"><strong class="date">{{ d.month }}</strong> | <strong
                     class="emph">{{ d['reading'] }}</strong></td>
             <td class="tdfix2"><a class="right nwb-roles">Chairman:</a></td>
-            <td style="width: 250px;"><strong>{{ program["chairman"].split(" ")[0].upper() }}
-                    {{ program["chairman"].split(" ")[1].capitalize() }}</strong></td>
+            <td style="width: 250px;">
+                <strong>{{ program["chairman"] }}</strong>
+            </td>
         </tr>
         <tr>
             <td class="tdfix"></td>
             <td class="tdfix2"><a class="right nwb-roles">Auxiliary Class Counsellor:</a></td>
-            <td style="width: 250px;"><strong>
-            {% if program["counsellor"].split(" ")[0] != "" %}
-             {{ program["counsellor"].split(" ")[0].upper() }}
-                    {{ program["counsellor"].split(" ")[1].capitalize() }}           
-            {% endif %}        
-            </strong></td>
+            <td style="width: 250px;">
+                <strong>{{ program["counsellor"] }}</strong>
+            </td>
         </tr>
         <tr>
             <td>6:30<i>&#9679;</i><strong class="emph">{{ d['opening_song'] }}</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>{% if not program["opening_prayer"] %} {% else %}
-            {{ program["opening_prayer"].split(" ")[0].upper() }} {{ program["opening_prayer"].split(" ")[1].capitalize() }}
-                    {% if program["opening_prayer"].split(" ")[2] %}{{ program["opening_prayer"].split(" ")[2].capitalize() }}{% endif %}</a>
-            {% endif %}
-            </td>
+            <td><a>{{ program["opening_prayer"] }}</td>
         </tr>
         <tr>
             <td>6:36<i>&#9679;</i><strong> Wetin We Go Learn? (1 min.)</strong></td>
             <td></td>
-            <td><strong>{{ program["chairman"].split(" ")[0].upper() }}
-                    {{ program["chairman"].split(" ")[1].capitalize() }}</strong></td>
+            <td><strong>{{ program["chairman"] }}</strong></td>
         </tr>
         <tr>
             <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
@@ -275,32 +268,20 @@ default_program_html = '''
             <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
                     class="emph">{{ d['fine_fine_lesson'] }}</strong>(10 min.)</td>
             <td></td>
-            <td>{{ program["fine_fine_lesson"].split(" ")[0].upper() }} {{ program["fine_fine_lesson"].split(" ")[1].capitalize() }}</td>
+            <td>{{ program["fine_fine_lesson"] }}</td>
         </tr>
         <tr>
             <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
                     Bible:</strong>(10 min.)</td>
             <td></td>
-            <td>{{ program["fine_fine_things_weh_you_see"].split(" ")[0].upper() }} {{ program["fine_fine_things_weh_you_see"].split(" ")[1].capitalize() }}</td>
+            <td>{{ program["fine_fine_things_weh_you_see"] }}</td>
         </tr>
         <tr>
             <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
                         class="emph">{{ d['bible_reading_point'].strip("th study") }}</a>): (4 min.)</strong>
                 <a class="right nwb-roles">Student:</a></td>
-            <td>{% if program["bible_reading_secondhall"] %}
-                {{ program["bible_reading_secondhall"].split(" ")[0].upper() }}
-                {{ program["bible_reading_secondhall"].split(" ")[1].capitalize() }}
-                {% if program["bible_reading_secondhall"].split(" ")[2] %}
-                {{ program["bible_reading_secondhall"].split(" ")[2].capitalize() }}
-                {% endif %}
-                </td>
-            {% endif %}
-            <td>{{ program["bible_reading"].split(" ")[0].upper() }} 
-            {{ program["bible_reading"].split(" ")[1].capitalize() }}
-            {% if program["bible_reading"].split(" ")[2] %}
-                {{ program["bible_reading"].split(" ")[2].capitalize() }}
-            {% endif %}
-            </td>
+            <td>{{ program["bible_reading_secondhall"] }}</td>
+            <td>{{ program["bible_reading"] }}</td>
         </tr>
         <tr>
             <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
@@ -321,53 +302,14 @@ default_program_html = '''
                     : ({{ d['preaching_time'][step] }} min.)</strong>
                 <a class="right nwb-roles">Student:<br>{% if parts.strip(":") in ["Talk", "Return Visit Video", "First Time Video", "Memorial Invitation Video"] %}
                 {% else %}Assistant:{% endif %}</a>
-                {% if parts.strip(":").endswith("Video") %}
-
-                {% elif length(vid) > 23 %}
-
-                {% elif parts.strip(":") == "Talk" %}
-
-                {% else %}
-                
-                {% endif %}
             </td>
-            <td>{% if program["preaching_secondhall"][step].split("/")[1] %}
-                {{ program["preaching_secondhall"][step].split("/")[0].split(" ")[0].upper() }}
-                {{ program["preaching_secondhall"][step].split("/")[0].split(" ")[1].capitalize() }} <br>
-                {{ program["preaching_secondhall"][step].split("/")[1].split(" ")[0].upper() }}
-                {{ program["preaching_secondhall"][step].split("/")[1].split(" ")[1].capitalize() }} <br>
-                {% elif program["preaching_secondhall"][step] %}
-                {{ program["preaching_secondhall"][step].split(" ")[0].upper() }}
-                {{ program["preaching_secondhall"][step].split(" ")[1].capitalize() }}
-                    {% if program["preaching_secondhall"][step].split(" ")[2] %}
-                    {{ program["preaching_secondhall"][step].split(" ")[2].capitalize() }}
-                    {% endif %}
-                {% endif %}
+            <td>{{ program["preaching_secondhall"][step]["student"] }} <br>
+                {{ program["preaching_secondhall"][step]["assistant"] }}
             </td>
-            <td> {% if program["preaching"][step].split("/")[1] %}
-                <a>{{ program["preaching"][step].split("/")[0].split(" ")[0].upper() }}
-                    {% if program["preaching"][step].split("/")[0].split(" ")[1] %}
-                    {{ program["preaching"][step].split("/")[0].split(" ")[1].capitalize() }}
-                    {% else %}
-
-                    {% endif %}
-                    {% if program["preaching"][step].split("/")[0].split(" ")[2] %}
-                    {{ program["preaching"][step].split("/")[0].split(" ")[2].capitalize() }}{% endif %}</a><br>
-                <a>{{ program["preaching"][step].split("/")[1].split(" ")[0].upper() }} 
-                    {{ program["preaching"][step].split("/")[1].split(" ")[1].capitalize() }} 
-                    {% if program["preaching"][step].split("/")[1].split(" ")[2] %}
-                    {{ program["preaching"][step].split("/")[1].split(" ")[2].capitalize() }}{% endif %}</a>
-                {% else %}
-                <a>{{ program["preaching"][step].split("/")[0].split(" ")[0].upper() }}
-                    {% if program["preaching"][step].split("/")[0].split(" ")[1] %}
-                    {{ program["preaching"][step].split("/")[0].split(" ")[1].capitalize() }}
-                    {% else %}
-                    
-                    {% endif %}
-                    {% if program["preaching"][step].split("/")[0].split(" ")[2] %}
-                    {{ program["preaching"][step].split("/")[0].split(" ")[2].capitalize() }}{% endif %}</a><br>
-                {% endif %}
-            </td>
+            <td>
+                {{ program["preaching"][step]["student"] }} <br>
+                {{ program["preaching"][step]["assistant"] }}
+            </td>    
         </tr>
         {% endfor %}
         <tr>
@@ -389,44 +331,24 @@ default_program_html = '''
                 <i style="color: rgb(126,0,36);">&#9679;</i><strong>{{ lac.strip(":") }}:
                     ({{ d['middle_parts_time'][step] }} min.)</strong></td>
             <td></td>
-            <td><strong>{% if program["middle_parts"][step] %}{{ program["middle_parts"][step].split(" ")[0].upper() }}
-                    {{ program["middle_parts"][step].split(" ")[1].capitalize() }}{% endif %}</strong></td>
+            <td><strong>{{ program["middle_parts"][step] }}</strong></td>
         </tr>
         {% endfor %}
         <tr>
             <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
                         class="emph">({{ d['book_study'] }}):</a> (30 min.)</strong></td>
             <td><a class="right nwb-roles">Conductor/Reader:</a></td>
-            <td><a>{{ program["cong_bible_study"].split("/")[0].split(" ")[0].upper() }}
-                    {% if program["cong_bible_study"].split("/")[0].split(" ")[1] %}
-                    {{ program["cong_bible_study"].split("/")[0].split(" ")[1].capitalize() }}
-                    {% else %}
-                    /
-                    {% endif %}
-                    {% if program["cong_bible_study"].split("/")[1] %}
-                    / {{ program["cong_bible_study"].split("/")[1].split(" ")[0].upper()  }}
-                    {{ program["cong_bible_study"].split("/")[1].split(" ")[1].capitalize() }}
-                    {% if program["cong_bible_study"].split("/")[1].split(" ")[2] %}
-                    {{ program["cong_bible_study"].split("/")[1].split(" ")[2].capitalize() }}
-                    {% endif %}
-                    {% endif %}
-                </a></td>
+            <td><a>{{ program["cong_bible_study"]["student"] }}/{{ program["cong_bible_study"]["assistant"] }} </a></td>
         </tr>
         <tr>
             <td>8:06<i style="color: rgb(126,0,36);">&#9679;</i><strong>Wetin We Don Learn (3 min.)</strong></td>
             <td></td>
-            <td><strong>{{ program["chairman"].split(" ")[0].upper() }}
-                    {{ program["chairman"].split(" ")[1].capitalize() }}</strong></td>
+            <td><strong>{{ program["chairman"] }}</strong></td>
         </tr>
         <tr>
             <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
-            <td><a>{% if program["closing_prayer"] == "" %}{% else %}{{ program["closing_prayer"].split(" ")[0].upper() }} 
-            {{ program["closing_prayer"].split(" ")[1].capitalize() }}
-            {% if program["closing_prayer"].split(" ")[2] %}
-                {{ program["closing_prayer"].split(" ")[2].capitalize() }}
-            {% endif %}
-            {% endif %}</a></td>
+            <td><a>{{ program["closing_prayer"] }}</a></td>
         </tr>
     </table><br>
     {% endfor %}
@@ -670,15 +592,6 @@ program_setup = '''
                     : ({{ d['preaching_time'][step] }} min.)</strong>
                 <a class="right nwb-roles">Student:<br>{% if parts.strip(":") in ["Talk", "Return Visit Video", "First Time Video", "Memorial Invitation Video"] %}
                 {% else %}Assistant:{% endif %}</a>
-                {% if parts.strip(":").endswith("Video") %}
-
-                {% elif length(vid) > 23 %}
-
-                {% elif parts.strip(":") == "Talk" %}
-
-                {% else %}
-                
-                {% endif %}
             </td>
             <td><input type="text" style="margin-top: 20px"><br><input type="text" style="margin-top: 20px"></td>
             <td><input type="text" style="margin-top: 20px"><br><input type="text" style="margin-top: 20px"></td>

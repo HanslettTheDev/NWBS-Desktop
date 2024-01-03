@@ -182,7 +182,6 @@ class JWIZARD:
 
             for html in htmls:
                 info = self.scrap_data(html)
-                info = MeetingParser(program=info, week_range=info["month"]).start_parsing()
                 items[info["month"]] = info
 
                 with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
