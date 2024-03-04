@@ -4,24 +4,18 @@ import aiohttp
 import os
 import config
 
+from datetime import datetime
 from bs4 import BeautifulSoup
-from nwbs.scheduler.utils import MeetingParser
-
+from nwbs.scheduler.utils import MeetingParser, get_weeks
+from nwbs.scheduler.utils import get_all_urls
 
 class JWIZARD:
-    def __init__(self, basepath = "", weeklist=[], month=[], pname="nwb"):
+    def __init__(self, basepath = "", weeklist={}, pname="nwb", links=[]):
         self.basepath = basepath
         self.weeklist = weeklist
-        self.month = month
         self.pname = pname
-        self.pathdict = {}
+        self.links = links
 
-    def get_all_urls(self):
-        weeklist = self.weeklist
-        for week in weeklist:
-            self.pathdict[week] = self.basepath.format(num=str(week), year=str(2024))
-        return self.pathdict
-    
     @staticmethod
     def rm_dups(items):
         seen = set()
@@ -74,43 +68,47 @@ class JWIZARD:
             return await response.text()
         # except Exception as error:
         #     print(error)
+
     def scrap_data(self, html) -> dict:
         soup = BeautifulSoup(html, "html5lib") # If this line causes an error, run 'pip install html5lib' or install html5lib
         #soup.prettify()
 
-        WeekItems = soup.find("div", {"class":"todayItems"})
+        WeekItems = soup.find("div", {"class":"main-wrapper"})
+        
         ###sections
-        SectionX0 = WeekItems.select(".itemData #p1")
+        SectionX0 = WeekItems.select("header")
         SectionX1 = WeekItems.select(".bodyTxt")  
         SectionX2 = WeekItems.select(".itemData #p2")
 
 
         ###section1
-        nwb_date = SectionX0[0].text
-        reading = SectionX2[0].select("strong")[0].text
+        nwb_date = SectionX0[0].select("h1")[0].text
+        reading = SectionX0[0].select("h2")[0].text
+        opening_song = SectionX1[0].select("h3 a")[0].text
 
-        opening_song = SectionX1[0].select("h3#p3 a")[0].text
-        fine_fine_lesson = SectionX1[0].select("h3#p5 strong")[0].text.split("1.")[-1].strip()
 
+        fine_fine_lesson = SectionX1[0].select("h3")[1].text.split("1.")[-1].strip()
+       
         preaching_divs = SectionX1[0].select("div")
-        
         br = []
-        for pd in preaching_divs:
-            if pd.text.strip().startswith("FINE-FINE LESSON"):
+        for pd in preaching_divs: 
+            if pd.text.strip().startswith("FINE-FINE LESSON FROM BIBLE"):
                 br.append(preaching_divs.index(pd))
                 continue
             if pd.text.strip().startswith("DE USE ALL YOUR HEART PREACH"):
                 br.append(preaching_divs.index(pd))
                 break
-
-
+        
         br = preaching_divs[br[0]:br[-1]][-1].select("p")[0].text.split(" ")        
         bible_reading = " ".join(br[2:4])
-        bible_reading_point = br[-1].replace(")", "")
-
-
+       
+        try:
+            bible_reading_point = br[-1].replace(")", "")
+        except AttributeError:
+            bible_reading_point = br[-1]
+       
         nwb_parts, nwb_parts_time, nwb_parts_point = self.clean_duplicates(preaching_divs)
-
+       
         christian_life = SectionX1[0].select("div")
         cl_h3s = []
         cl_ps = []
@@ -118,8 +116,8 @@ class JWIZARD:
             if t.text.strip().startswith("DE LIVE CHRISTIAN LIFE"):
                 cl_h3s = t.find_all_next(name="h3",string=True)
                 cl_ps = t.find_all_next(attrs={"class": "du-margin-inlineStart--5 du-margin-inlineStart-desktopOnly--6"})
-
-
+       
+       
         middle_song = cl_h3s[0].text.strip()    
         # cleans the messages and extracts only those that start with
         # "(" and starts with a string literal that can be converted to an integer
@@ -130,7 +128,7 @@ class JWIZARD:
                     nwb_lac.append(i.text.split(".")[-1].strip())
             except ValueError:
                 continue
-
+       
        # get congregation bible study
         book_study = ""
         for i in cl_ps:
@@ -146,9 +144,12 @@ class JWIZARD:
                 continue
         #"remove the congregation bible study from the list"
         nwb_lac.pop(-1)
-        concluding_song = SectionX1[0].select("span[class='dc-icon--music dc-icon-size--basePlus1 dc-icon-margin-inlineStart--2 dc-icon-margin-inlineEnd--8']")[0]
-        concluding_song = concluding_song.select_one("strong").text
-
+        try:
+            concluding_song = SectionX1[0].select("span[class='dc-icon--music dc-icon-size--basePlus1 dc-icon-margin-inlineStart--2 dc-icon-margin-inlineEnd--8']")[0]
+            concluding_song = concluding_song.select_one("a").text
+        except IndexError:
+            concluding_song = SectionX1[0].select("h3")[-1]
+            concluding_song = concluding_song.select_one("a").text
         nwb = {
             'month': nwb_date,
             'reading': reading,
@@ -166,16 +167,17 @@ class JWIZARD:
             'book_study_box': "",
             'concluding_song': concluding_song,
         }
-
+       
+       
         return nwb
-
+       
     async def main(self):
         async with aiohttp.ClientSession() as session:
             tasklist = []
             items = {}
 
 
-            for _ , url in self.get_all_urls().items():
+            for url in self.links:
                 tasklist.append(self.fetch_data(session, url))
 
             htmls = await asyncio.gather(*tasklist)
@@ -183,12 +185,21 @@ class JWIZARD:
             for html in htmls:
                 info = self.scrap_data(html)
                 items[info["month"]] = info
-
+                
                 with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                     json.dump(items, f, indent=4)
 
-
-#weeklist=[x for x in range(1, 10)]
-#jwizard = JWIZARD(basepath=config.SCRAPPER_LINK,weeklist=weeklist)
-#asyncio.run(jwizard.main())
-
+# month = "March-April"
+# monthx = get_weeks(month.split("-")[0].strip(), datetime.now().year)
+# monthy = get_weeks(month.split("-")[1].strip(), datetime.now().year)
+# weeklist = {
+#         month.split("-")[0]: monthx,
+#         month.split("-")[-1]: monthy
+#         }
+# jwizard = JWIZARD(
+#     basepath=config.NEW_LINK, 
+#     weeklist=weeklist, 
+#     pname=month.lower(),
+#     links=get_all_urls(weeklist, config.NEW_LINK, month)
+# )
+# asyncio.run(jwizard.main())

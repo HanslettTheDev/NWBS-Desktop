@@ -3,7 +3,8 @@ import json
 import webbrowser
 import logging
 import config
-
+import calendar
+from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from nwbs import logCode
 from nwbs.html import default_program_html, program_setup
@@ -14,6 +15,49 @@ logging.basicConfig(
     format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
     level=logging.ERROR
 )
+
+
+def get_weeks(month: str, year: int):
+    month_dict = {name: num for num, name in enumerate(calendar.month_name) if num}
+    month_int = month_dict[month]
+    
+    all_weeks = calendar.Calendar().monthdayscalendar(year, month_int)
+
+    weeks = []
+
+    for items in all_weeks:
+        if items[0] == 0:
+            #first dictionary object is zero due to enumerate's implementation
+            continue
+        if items[-1] == 0:
+            non_zero_weeks = [x for x in items if x != 0]
+            count = 1
+            while len(non_zero_weeks) != 7: 
+                non_zero_weeks.append(count)
+                count += 1
+
+            # grab the id of the current month and add 1 on the id to get
+            # the next month and append to the string
+            next_month = [
+                key for key, value in month_dict.items() if month_dict[month] + 1 == value
+            ]
+            weeks.append(f"{non_zero_weeks[0]}-{next_month[-1]}-{non_zero_weeks[-1]}")
+            continue
+        weeks.append(f"{items[0]}-{items[-1]}")
+    return weeks
+
+
+def get_all_urls(weeklist: dict, basepath: str, xmonth: str):
+    urls = []
+    for month, weeks in weeklist.items():
+        for week in weeks:
+            urls.append(basepath.format(
+                week=week, 
+                year=str(datetime.now().year),
+                monthx=xmonth.lower().strip(),
+                current_month=month.lower()
+            ))
+    return urls
 
 
 class MeetingParser:

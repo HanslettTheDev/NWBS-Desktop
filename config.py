@@ -2,7 +2,9 @@ VERSION_NUMBER = "V1.0.4"
 DATABASE_NAME = "congregation.sqlite"
 
 API_LINK = "https://api.github.com/repos/hanslettthedev/nwbs-desktop/releases/latest"
-SCRAPPER_LINK = "https://wol.jw.org/wes-x-pgw/wol/meetings/r429/lp-pgw/{year}/{num}"
+SCRAPPER_LINK = "https://wol.jw.org/en/wol/meetings/r1/lp-e/{year}/{num}"
+
+NEW_LINK = "https://www.jw.org/wes-x-pgw/library/jw-meeting-workbook/{monthx}-{year}-mwb/Life-and-Preaching-Meeting-Workbook-for-{current_month}-{week}-{year}/"
 
 PRODUCTION = False
 
