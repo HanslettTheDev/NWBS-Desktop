@@ -3,7 +3,7 @@ import asyncio
 import aiohttp
 import os
 import config
-
+from patches import link_patches, los_index_patches
 from datetime import datetime
 from bs4 import BeautifulSoup
 from nwbs.scheduler.utils import MeetingParser, get_weeks
@@ -22,7 +22,12 @@ class JWIZARD:
         return [item for item in items if not (item in seen or seen.add(item))]
 
     @staticmethod
-    def clean_duplicates(preaching_divs):
+    def clean_duplicates(preaching_divs, week):
+        # index range is to get the preaching part and determine the best place to remove the links
+        try:
+            index_range = los_index_patches[week]
+        except KeyError:
+            index_range = -1
         preaching_h3s, preaching_points, preaching_time = [], [], []
         # Get the titles for the different preaching parts only
         for pd in preaching_divs:
@@ -46,7 +51,7 @@ class JWIZARD:
         # we are adding +1 on the pos[0] because we want to remove the last item before the header
         # DE USE ALL YOUR HEART PREACH so we can select just one of the p tags and escape the nontype error
         los = []
-        for p in preaching_divs[pos[0]+1:pos[-1]]:
+        for p in preaching_divs[pos[0]+1:pos[index_range]]:
             los.append(p.select_one("p").text.strip())
             preaching_points += p.select("a")
         
@@ -69,23 +74,29 @@ class JWIZARD:
         # except Exception as error:
         #     print(error)
 
-    def scrap_data(self, html) -> dict:
+    def extract_page(self, html):
         soup = BeautifulSoup(html, "html5lib") # If this line causes an error, run 'pip install html5lib' or install html5lib
-        #soup.prettify()
-
         WeekItems = soup.find("div", {"class":"main-wrapper"})
+        try:
+            ###sections
+            global SectionX0, SectionX1
+            SectionX0 = WeekItems.select("header")
+            SectionX1 = WeekItems.select(".bodyTxt")  
+        except AttributeError:
+            print(f"A Link is broken, \n{html}")
         
-        ###sections
-        SectionX0 = WeekItems.select("header")
-        SectionX1 = WeekItems.select(".bodyTxt")  
-        SectionX2 = WeekItems.select(".itemData #p2")
+        return [SectionX0, SectionX1]
+        
 
+    def scrap_data(self, html) -> dict:
+        ###sections
+        SectionX0, SectionX1 = self.extract_page(html)
+        # SectionX2 = WeekItems.select(".itemData #p2")
 
         ###section1
         nwb_date = SectionX0[0].select("h1")[0].text
         reading = SectionX0[0].select("h2")[0].text
         opening_song = SectionX1[0].select("h3 a")[0].text
-
 
         fine_fine_lesson = SectionX1[0].select("h3")[1].text.split("1.")[-1].strip()
        
@@ -107,7 +118,7 @@ class JWIZARD:
         except AttributeError:
             bible_reading_point = br[-1]
        
-        nwb_parts, nwb_parts_time, nwb_parts_point = self.clean_duplicates(preaching_divs)
+        nwb_parts, nwb_parts_time, nwb_parts_point = self.clean_duplicates(preaching_divs, nwb_date)
        
         christian_life = SectionX1[0].select("div")
         cl_h3s = []
@@ -176,8 +187,11 @@ class JWIZARD:
             tasklist = []
             items = {}
 
-
             for url in self.links:
+                if url in link_patches.keys():
+                    print("Needs a patch: Broken url -> ", url)
+                    url = link_patches[url]
+                    print(f"Applied Patch successfully: New url -> {url}")
                 tasklist.append(self.fetch_data(session, url))
 
             htmls = await asyncio.gather(*tasklist)
@@ -189,7 +203,7 @@ class JWIZARD:
                 with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                     json.dump(items, f, indent=4)
 
-# month = "March-April"
+# month = "May-June"
 # monthx = get_weeks(month.split("-")[0].strip(), datetime.now().year)
 # monthy = get_weeks(month.split("-")[1].strip(), datetime.now().year)
 # weeklist = {

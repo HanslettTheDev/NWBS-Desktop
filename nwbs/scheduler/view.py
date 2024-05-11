@@ -1,11 +1,8 @@
 import asyncio
-from calendar import week
 from datetime import datetime
+import json
 import os
-import traceback
-import time
 import random
-from webbrowser import get
 import aiohttp
 import logging
 import config
@@ -20,6 +17,7 @@ from nwbs.ui_functions import Tweakfunctions
 from nwbs.utils import database_exists
 from nwbs.scheduler.scrapper import JWIZARD
 from nwbs.scheduler.dialogs import *
+from config import FOLDER_REFERENCES
 # from home.css import congregation_view_css
 
 import logging
@@ -180,7 +178,6 @@ class Scheduler(BaseHomeWindow):
         self.month_programs = []
         self.backup = [] # stores the data to use for the previous items
         self.count = 0
-
 
         def main(has_pre_data:dict = {}):
             try:

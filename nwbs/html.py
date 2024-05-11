@@ -346,7 +346,7 @@ default_program_html = '''
             <td><strong>{{ program["chairman"] }}</strong></td>
         </tr>
         <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
+            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">{{ program["concluding_song"] }}</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
             <td><a>{{ program["closing_prayer"] }}</a></td>
         </tr>
@@ -631,7 +631,7 @@ program_setup = '''
             <td><strong>[[ chairman ]]</strong></td>
         </tr>
         <tr>
-            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">Song 113</strong></td>
+            <td>8:09<i style="color: rgb(126,0,36);">&#9679;</i><strong class="emph">{{ d[''] }}</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
             <td><input type="text"></td>
         </tr>
