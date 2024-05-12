@@ -282,7 +282,7 @@ class ProgramDialog(QDialog):
         # Set the respective text data for the previous data
         self.group_label_input.setText(previous_info["group"])
         self.chairman_input.setText(previous_info["chairman"])
-        self.counselor_input.setText(previous_info["counsellor"])
+        self.counselor_input.setText(previous_info["counsellor"] if previous_info["counsellor"] else " ")
         self.song_input.setText(previous_info["opening_prayer"])
         self.fflesson_input.setText(previous_info["fine_fine_lesson"])
         self.ffsee_bible_input.setText(previous_info["fine_fine_things_weh_you_see"])
@@ -294,20 +294,39 @@ class ProgramDialog(QDialog):
         las_widgets = [widget for widget in self.findChildren(QLineEdit) if widget.objectName().startswith("input_middle_parts_")]
         # preaching 
         for widget, part in zip(preaching_widgets, previous_info["preaching"]):
-            widget.setText(part["student"]+"/"+part["assistant"])
+            self.check_blank(widget, part, "preaching")
         # second hall preaching
         for widget, part in zip(secondhall_widgets, previous_info["preaching_secondhall"]):
-            widget.setText(part["student"]+"/"+part["assistant"]
-)
+            self.check_blank(widget, part, "second")
         # Life as christians 
         for widget, part in zip(las_widgets, previous_info["middle_parts"]):
             widget.setText(part)
         # Congregation bible study and prayer
-        self.cong_bible_input.setText(
-            previous_info["cong_bible_study"]["student"] + "/" + previous_info["cong_bible_study"]["assistant"]
-        )
+        self.check_blank(self.cong_bible_input, previous_info["cong_bible_study"], "cong")
+        
         self.conc_song_input.setText(previous_info["closing_prayer"])
 
+    def check_blank(self, widget, part, type):
+        """
+        Checks a previous file data if it contains blank info
+        type: str -> indicate if it's a main hall, second hall or our life as christians
+        """
+        if type == "preaching" and part["student"] == "":
+            return widget.setText(" ")
+        
+        if type == "second" and  part["student"] == "":
+            return widget.setText(" ") 
+        
+        if type == "cong" and part["assistant"] == "":
+            return widget.setText(part["student"])
+        
+        return widget.setText(
+            part["student"] + "/" + part["assistant"]
+            )\
+            if type == "cong" else widget.setText(part["student"] + "/" + part["assistant"])
+        
+
+        
     def accept(self):
         for widget in self.findChildren(QLineEdit):
             if widget.text() == "":
