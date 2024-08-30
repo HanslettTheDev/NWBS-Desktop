@@ -129,9 +129,9 @@ class Scheduler(BaseHomeWindow):
         
         if text != "":
             output = self.sutils.create_program(text.split(" program")[0])
-            output2 = self.sutils.create_program(text.split(" program")[0], is_schedule=True)
+            # output2 = self.sutils.create_program(text.split(" program")[0], is_schedule=True)
             self.sutils.preview_page(text.split(" program")[0], output)
-            self.sutils.preview_page(text.split(" program")[0] + " scheduler", output2) # for the schedule to fill names
+            # self.sutils.preview_page(text.split(" program")[0] + " scheduler", output2) # for the schedule to fill names
             QMessageBox.information(self, "Downloading", "You will view this program in your web browser and then save it using the print function", QMessageBox.StandardButton.Ok)
 
         # make the buttons checkable
