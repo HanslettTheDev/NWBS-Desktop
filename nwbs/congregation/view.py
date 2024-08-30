@@ -1,5 +1,5 @@
 import logging
-import config
+import nwbs.config as config
 import sys
 
 from PyQt6.QtWidgets import (QPushButton, QVBoxLayout, QLabel, 

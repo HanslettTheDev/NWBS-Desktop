@@ -2,7 +2,7 @@ import os
 import json
 import webbrowser
 import logging
-import config
+import nwbs.config as config
 import calendar
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
@@ -205,51 +205,70 @@ class SchedulerUtils:
         logger.debug(f"Program saved: FileName > {filename}.json")
         return True
     
-    def create_program(self, program_name, is_schedule:bool = False):
-        # Get the data and programs from the json and pass it as objects to the txt
-        with open(os.path.join(os.getcwd(), self.paths["generated_programs"], program_name + " program.json"), "r", encoding="utf-8") as f:
-            blob = json.load(f)
-        
-        with open(os.path.join(os.getcwd(), self.paths["meeting_parts"], program_name + ".json"), "r", encoding="utf-8") as f:
-            blob2 = json.load(f)
+    def create_program(self, program_name: str, is_schedule: bool = False) -> str:
+        """Generate a program template using the given program name and data."""
+        program_data_path = os.path.join(
+            os.getcwd(), self.paths["generated_programs"], f"{program_name} program.json"
+        )
+        meeting_parts_path = os.path.join(
+            os.getcwd(), self.paths["meeting_parts"], f"{program_name}.json"
+        )
 
-        # create the file and write the defaults to it
-        with open(os.path.join(os.getcwd(), self.paths["templates"], program_name + ".html"), "w") as f:
-            f.write(default_program_html)
-        
-        if is_schedule:
-            with open(os.path.join(os.getcwd(), self.paths["templates"], program_name + " scheduler.html"), "w") as f:
-                f.write(program_setup)
-        
-        # get only the dicts from the json
-        programs = [value for value in blob2.values()]
+        with open(program_data_path, "r", encoding="utf-8") as f:
+            program_data = json.load(f)
 
-        # do clean checks to get time for middle parts and preaching
-        time_stands_1 = []
-        time_stands_2 = []
-        for d in programs:
-            pt_time, mp_time = {},{}
-            s = self.update_time(d["preaching_time"], d["middle_parts_time"])
-            pt_time[d["month"]], mp_time[d["month"]] = s[0], s[1]
-            time_stands_1.append(pt_time)
-            time_stands_2.append(mp_time)
-        
-        try:
-            template_env = Environment(loader=FileSystemLoader(f'{os.path.join(os.getcwd(), self.paths["templates"])}'))
-            template_object = None
-            if not is_schedule:
-                template_object = template_env.get_template(f'{program_name}.html')
-            else:
-                template_object = template_env.get_template(f'{program_name} scheduler.html')
-            output = template_object.render(
-                programs=blob, data=blob2, zip=zip, zip2=enumerate, 
-                length=len, preachingt=time_stands_1, middlepartst=time_stands_2, 
-                tostring=str, toint=int
+        with open(meeting_parts_path, "r", encoding="utf-8") as f:
+            meeting_parts = json.load(f)
+
+        template_paths = {
+            "program": os.path.join(
+                os.getcwd(), self.paths["templates"], f"{program_name}.html"
+            ),
+            "schedule": os.path.join(
+                os.getcwd(), self.paths["templates"], f"{program_name} scheduler.html"
+            ),
+        }
+
+        for path, content in (
+            (template_paths["program"], default_program_html),
+            (template_paths["schedule"], program_setup),
+        ):
+            with open(path, "w") as f:
+                f.write(content)
+
+        preaching_time_stands = []
+        middle_parts_time_stands = []
+        for meeting_part in meeting_parts.values():
+            preaching_time, middle_parts_time = {}, {}
+            preaching_time[meeting_part["month"]], middle_parts_time[
+                meeting_part["month"]
+            ] = self.update_time(
+                meeting_part["preaching_time"], meeting_part["middle_parts_time"]
             )
-            logger.debug("Templates successfully generated")
+            preaching_time_stands.append(preaching_time)
+            middle_parts_time_stands.append(middle_parts_time)
+
+        try:
+            template_env = Environment(
+                loader=FileSystemLoader(self.paths["templates"])
+            )
+            template_object = template_env.get_template(
+                f"{program_name}{' scheduler' if is_schedule else ''}.html"
+            )
+            output = template_object.render(
+                programs=program_data,
+                data=meeting_parts,
+                zip=zip,
+                zip2=enumerate,
+                length=len,
+                preachingt=preaching_time_stands,
+                middlepartst=middle_parts_time_stands,
+                tostring=str,
+                toint=int,
+            )
             return output
         except Exception as e:
-            logger.exception(f"An error occured while generating a program. See Error >>", exc_info=True)
+            raise e
 
     def update_time(self, preaching_time:list, middle_time:list) -> tuple:
         default_time = 2

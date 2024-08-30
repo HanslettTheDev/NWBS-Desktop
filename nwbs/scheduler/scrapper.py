@@ -2,7 +2,7 @@ import json
 import asyncio 
 import aiohttp
 import os
-import config
+import nwbs.config as config
 from patches import link_patches, los_index_patches
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -28,7 +28,7 @@ class JWIZARD:
             index_range = los_index_patches[week]
         except KeyError:
             index_range = -1
-        preaching_h3s, preaching_points, preaching_time = [], [], []
+        preaching_h3s, preaching_time = [], []
         # Get the titles for the different preaching parts only
         for pd in preaching_divs:
             if pd.text.strip().startswith("DE USE ALL YOUR HEART PREACH"):
@@ -53,18 +53,11 @@ class JWIZARD:
         los = []
         for p in preaching_divs[pos[0]+1:pos[index_range]]:
             los.append(p.select_one("p").text.strip())
-            preaching_points += p.select("a")
         
         # loop through loc to get the preaching preaching_time
         preaching_time = [x.strip()[1:3] for x in JWIZARD.rm_dups(los)]
-        # filters the list to keep only text starting with lmd
-        cas = []
-        for p in preaching_points:
-            if p.text.strip().startswith("lmd"):
-                cas.append(p.text)
-        preaching_points = JWIZARD.rm_dups(cas)
 
-        return preaching_h3s, preaching_time, preaching_points
+        return preaching_h3s, preaching_time
 
     async def fetch_data(self,session, url):
         # try:
@@ -113,16 +106,10 @@ class JWIZARD:
         br = preaching_divs[br[0]:br[-1]][-1].select("p")[0].text.split(" ")        
         bible_reading = " ".join(br[2:4])
        
-        try:
-            bible_reading_point = br[-1].replace(")", "")
-        except AttributeError:
-            bible_reading_point = br[-1]
-       
-        nwb_parts, nwb_parts_time, nwb_parts_point = self.clean_duplicates(preaching_divs, nwb_date)
+        nwb_parts, nwb_parts_time = self.clean_duplicates(preaching_divs, nwb_date)
        
         christian_life = SectionX1[0].select("div")
-        cl_h3s = []
-        cl_ps = []
+        cl_h3s, cl_ps = [], []
         for t in christian_life:
             if t.text.strip().startswith("DE LIVE CHRISTIAN LIFE"):
                 cl_h3s = t.find_all_next(name="h3",string=True)
@@ -167,9 +154,7 @@ class JWIZARD:
             'opening_song': opening_song,
             'fine_fine_lesson': fine_fine_lesson,
             'bible_reading': bible_reading,
-            'bible_reading_point': bible_reading_point,
             'preaching': nwb_parts,
-            'preaching_points': nwb_parts_point,
             'preaching_time': nwb_parts_time,
             'middle_song': middle_song,
             'middle_parts': nwb_lac,
@@ -178,7 +163,6 @@ class JWIZARD:
             'book_study_box': "",
             'concluding_song': concluding_song,
         }
-       
        
         return nwb
        
@@ -203,7 +187,7 @@ class JWIZARD:
                 with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                     json.dump(items, f, indent=4)
 
-# month = "May-June"
+# month = "September-October"
 # monthx = get_weeks(month.split("-")[0].strip(), datetime.now().year)
 # monthy = get_weeks(month.split("-")[1].strip(), datetime.now().year)
 # weeklist = {

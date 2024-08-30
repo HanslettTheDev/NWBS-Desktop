@@ -9,7 +9,7 @@ import calendar
 import json
 import sys
 import os
-import config
+import nwbs.config as config
 from datetime import date
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 from PyQt6.QtWidgets import QMessageBox, QApplication

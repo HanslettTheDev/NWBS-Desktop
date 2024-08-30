@@ -5,7 +5,7 @@ import os
 import random
 import aiohttp
 import logging
-import config
+import nwbs.config as config
 from PyQt6.QtWidgets import (QMessageBox, QVBoxLayout,
 QLabel, QPushButton, QFrame)
 from PyQt6.QtCore import (Qt)
@@ -17,7 +17,7 @@ from nwbs.ui_functions import Tweakfunctions
 from nwbs.utils import database_exists
 from nwbs.scheduler.scrapper import JWIZARD
 from nwbs.scheduler.dialogs import *
-from config import FOLDER_REFERENCES
+from nwbs.config import FOLDER_REFERENCES
 # from home.css import congregation_view_css
 
 import logging

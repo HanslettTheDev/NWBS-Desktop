@@ -1,4 +1,4 @@
-import config
+import nwbs.config as config
 import aiohttp
 import logging
 import sys

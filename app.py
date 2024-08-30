@@ -11,7 +11,7 @@ import resources
 import random
 import logging
 import asyncio
-import config
+import nwbs.config as config
 
 from datetime import date, datetime
 from importlib import import_module
