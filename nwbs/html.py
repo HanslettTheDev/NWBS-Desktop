@@ -292,7 +292,7 @@ default_program_html = '''
         <tr>
             <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
                     class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
+            <td class="nwb-roles">Second Hall</td>
             <td class="nwb-roles">Main Hall</td>
         </tr>
         {% for step, parts in zip2(d['preaching']) %}

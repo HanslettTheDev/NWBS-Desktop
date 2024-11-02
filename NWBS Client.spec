@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['manage.py'],
+    ['app.py'],
     pathex=[],
     binaries=[],
     datas=[('./usr/*', 'usr'), ('./bin/*', 'bin')],
