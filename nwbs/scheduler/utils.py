@@ -22,28 +22,20 @@ def get_weeks(month: str, year: int):
     month_int = month_dict[month]
     
     all_weeks = calendar.Calendar().monthdayscalendar(year, month_int)
-
-    weeks = []
-
-    for items in all_weeks:
-        if items[0] == 0:
-            #first dictionary object is zero due to enumerate's implementation
-            continue
-        if items[-1] == 0:
-            non_zero_weeks = [x for x in items if x != 0]
-            count = 1
-            while len(non_zero_weeks) != 7: 
-                non_zero_weeks.append(count)
-                count += 1
-
-            # grab the id of the current month and add 1 on the id to get
-            # the next month and append to the string
-            next_month = [
-                key for key, value in month_dict.items() if month_dict[month] + 1 == value
-            ]
-            weeks.append(f"{non_zero_weeks[0]}-{next_month[-1]}-{non_zero_weeks[-1]}")
-            continue
-        weeks.append(f"{items[0]}-{items[-1]}")
+    weeks = [f"{week[0]}-{week[-1]}" for week in all_weeks if 0 not in week]
+    last_week = all_weeks[-1]
+        
+    if last_week[-1] == 0:
+        non_zero_weeks = [x for x in last_week if x != 0]
+        # grab the id of the current month and add 1 on the id to get
+        # the next month and append to the string
+        #if the month id is 12 = december, just reset it back to 1 = January 
+        next_month_id = month_int + 1 if month_int != 12 else 1
+        next_month_name = [
+            key for key, value in month_dict.items() if next_month_id == value
+        ][-1]
+        weeks.append(f"{non_zero_weeks[0]}-{next_month_name}-{len(last_week)-len(non_zero_weeks)}")
+            
     return weeks
 
 
@@ -202,7 +194,7 @@ class SchedulerUtils:
                 blob[key] = MeetingParser(program=_d, week_range=key).start_parsing()[key]
                 with open(os.path.join(os.getcwd(), self.paths["generated_programs"], filename), "w") as f:
                     json.dump(blob, f, indent=4)
-        logger.debug(f"Program saved: FileName > {filename}.json")
+        logging.debug(f"Program saved: FileName > {filename}.json")
         return True
     
     def create_program(self, program_name: str, is_schedule: bool = False) -> str:
@@ -291,7 +283,7 @@ class SchedulerUtils:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(html)
         webbrowser.open(file_path)
-        logger.debug(f"Program created: Location >> {file_path}")
+        logging.debug(f"Program created: Location >> {file_path}")
 
     def test_pdf(self, html=""):
         pass

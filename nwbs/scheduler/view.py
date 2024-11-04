@@ -163,16 +163,19 @@ class Scheduler(BaseHomeWindow):
                 )
                 asyncio.run(jwizard.main())
         except aiohttp.client_exceptions.ClientConnectorError:
+            logging.error("Unexpected error occured while fetching for a program: ", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", "No Internet Connection. Please connect to the internet and try again")
             return
         except AttributeError:
-            logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            logging.error("Unexpected error occured while fetching for a program: {}", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")		
             return
         except IndexError:
             logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")
-            return 
+            return
+        except Exception as e:
+            logging.error("Unexpected error occured while fetching for a program:", exc_info=True) 
         
         parts = self.sutils.get_all_parts(dialog.combo.currentText())
         self.month_programs = []

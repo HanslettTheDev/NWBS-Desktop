@@ -51,7 +51,7 @@ class Congregation(BaseHomeWindow):
 			cong_button_1.clicked.connect(lambda: self.congregation.real_database(self))
 			cong_button_2.clicked.connect(lambda: self.congregation.fake_database(self))
 		except Exception as e:
-			logger.exception("Application crashed. Here is the traceback:", exc_info=True)
+			logging.exception("Application crashed. Here is the traceback:", exc_info=True)
 			sys.exit(1)
 		
 		# add to layout

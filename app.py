@@ -48,7 +48,7 @@ if config.PRODUCTION:
 		create_database = getattr(import_module('scripts.nwbs.utils'), 'create_database')
 		create_months = getattr(import_module('scripts.nwbs.utils'), 'create_months')
 	except ModuleNotFoundError:
-		logger.exception('Module Not Found. >> traceback erorr below', exc_info=True)
+		logging.exception('Module Not Found. >> traceback erorr below', exc_info=True)
 else:
 	from nwbs.utils import create_database, create_months
 	from nwbs.home import BaseHomeWindow as home
@@ -74,9 +74,9 @@ class Launcher(QApplication):
 		try:
 			self.home_window = home()
 			self.home_window.show()
-			logger.debug('Main Window Running >>')
+			logging.debug('Main Window Running >>')
 		except Exception:
-			logger.exception("Application crashed. Below is why:", exc_info=True)
+			logging.exception("Application crashed. Below is why:", exc_info=True)
 			sys.exit(1)
 
 if __name__ == '__main__':
