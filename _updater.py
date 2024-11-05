@@ -1,4 +1,3 @@
-import nwbs.config as config
 import aiohttp
 import logging
 import sys
@@ -6,6 +5,7 @@ import aiofiles
 import os
 import zipfile
 
+import config
 from PyQt6.QtWidgets import (QApplication, QMessageBox)
 
 logger = logging.getLogger(__name__)

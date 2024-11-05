@@ -5,7 +5,7 @@ import os
 import random
 import aiohttp
 import logging
-import nwbs.config as config
+import config as config
 from PyQt6.QtWidgets import (QMessageBox, QVBoxLayout,
 QLabel, QPushButton, QFrame)
 from PyQt6.QtCore import (Qt)

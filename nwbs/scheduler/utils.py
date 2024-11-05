@@ -2,7 +2,7 @@ import os
 import json
 import webbrowser
 import logging
-import nwbs.config as config
+import config as config
 import calendar
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader

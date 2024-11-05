@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (QMessageBox, QDialog, QVBoxLayout,
 QComboBox, QLabel, QFormLayout, QDialogButtonBox, QWidget, 
  QTextBrowser, QLineEdit, QCompleter, QPushButton, QScrollArea)
 
-from nwbs.config import FOLDER_REFERENCES
+from config import FOLDER_REFERENCES
 
 from PyQt6.QtSql import QSqlQuery
 from PyQt6.QtCore import (Qt, QRect, QSize)

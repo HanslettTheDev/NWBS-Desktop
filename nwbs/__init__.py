@@ -1,3 +1,3 @@
-import nwbs.config as config
+import config as config
 
 __version__ = config.VERSION_NUMBER

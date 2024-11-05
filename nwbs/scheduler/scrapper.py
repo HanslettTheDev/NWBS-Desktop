@@ -3,7 +3,7 @@ import asyncio
 import logging
 import aiohttp
 import os
-import nwbs.config as config
+import config as config
 from patches import link_patches, los_index_patches
 from bs4 import BeautifulSoup
 # from nwbs.scheduler.utils import MeetingParser, get_weeks

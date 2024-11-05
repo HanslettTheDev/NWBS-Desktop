@@ -10,7 +10,7 @@ import os
 import resources
 import logging
 import asyncio
-import nwbs.config as config
+import config
 
 from importlib import import_module
 from PyQt6.QtWidgets import QApplication
@@ -24,8 +24,6 @@ if not os.path.exists(os.path.join(os.getcwd(), config.STORAGE_FOLDER)):
 	'''Create the dir for app usage'''
 	for sfn in config.STORAGE_FOLDER_NAMES:
 		os.makedirs(os.path.join(os.getcwd(), config.STORAGE_FOLDER, sfn))
-		logging.debug(f"Created Storage Folder: {os.path.join(os.getcwd(), config.STORAGE_FOLDER, sfn)}")
-	logging.info("Storage Folders created successfully")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
