@@ -8,12 +8,9 @@ import zipfile
 
 from PyQt6.QtWidgets import (QApplication, QMessageBox)
 
-from nwbs import logCode
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-	filename=config.LOG_PATH + f"/__main__{logCode()[0]}_{logCode()[1]}.log",
-	format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
 	level=logging.DEBUG
 )
 
@@ -77,7 +74,7 @@ class Updater():
 			try:
 				zipfile.ZipFile(path_to_file).extractall()
 			except Exception as e:
-				logging.exception("Something went wrong when decompressing >> traceback", exc_info=True)
+				logging.error("Something went wrong when decompressing >> traceback", exc_info=True)
 				return False
 		self.delete_update_file(path_to_file)
 		return True

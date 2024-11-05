@@ -1,5 +1,6 @@
 import json 
 import asyncio 
+import logging
 import aiohttp
 import os
 import nwbs.config as config
@@ -17,27 +18,53 @@ class JWIZARD:
         self.links = links
 
     @staticmethod
-    def rm_dups(items):
+    def remove_duplicates(items):
+        """
+        Remove duplicate items from a list.
+
+        This function uses a set to keep track of the items it has seen so far. It iterates
+        over the input list and adds each item to the set if it's not already there. If the
+        item is already in the set, it skips it. The function returns the filtered list.
+        """
         seen = set()
-        return [item for item in items if not (item in seen or seen.add(item))]
+        return [item for item in items if item not in seen and not seen.add(item)]
 
     @staticmethod
     def clean_duplicates(preaching_divs, week):
-        # index range is to get the preaching part and determine the best place to remove the links
+        """
+        Cleans and retrieves the preaching titles and times from the given div elements.
+
+        This function identifies and extracts preaching parts and their respective times
+        from a list of div elements. It locates sections between specific headers and 
+        processes them to remove duplicates and extract the necessary information.
+
+        Args:
+            preaching_divs (list): List of div elements containing preaching information.
+            week (str): The week identifier used to determine specific index adjustments.
+
+        Returns:
+            tuple: A tuple containing two lists:
+                - preaching_h3s: Titles of the preaching parts.
+                - preaching_time: Times associated with each preaching part.
+        """
         try:
+            # Use patched index if available, otherwise default to -1
             index_range = los_index_patches[week]
         except KeyError:
             index_range = -1
+
         preaching_h3s, preaching_time = [], []
-        # Get the titles for the different preaching parts only
+
+        # Locate the titles for the different preaching parts
         for pd in preaching_divs:
             if pd.text.strip().startswith("DE USE ALL YOUR HEART PREACH"):
                 preaching_h3s = pd.find_all_next(name="h3", attrs={"class": "du-color--gold-700"})
                 break
+
+        # Extract and clean the titles
         preaching_h3s = [x.text.strip().split(".")[-1].strip() for x in preaching_h3s]
-        # create a list that will search for the first and last occurance of a div between
-        # De use all your heart preach
-        # and get their indexes so we can loop through them and get their child elements
+
+        # Identify the positions of specific headers to narrow down the relevant sections
         pos = []
         for p in preaching_divs:
             if p.text.strip().startswith("DE USE ALL YOUR HEART PREACH"):
@@ -48,24 +75,23 @@ class JWIZARD:
                 pos.append(preaching_divs.index(p))
                 continue
 
-        # we are adding +1 on the pos[0] because we want to remove the last item before the header
-        # DE USE ALL YOUR HEART PREACH so we can select just one of the p tags and escape the nontype error
+        # Extract text content between identified positions, skipping the header itself
         los = []
         for p in preaching_divs[pos[0]+1:pos[index_range]]:
             los.append(p.select_one("p").text.strip())
-        
-        # loop through loc to get the preaching preaching_time
-        preaching_time = [x.strip()[1:3] for x in JWIZARD.rm_dups(los)]
+
+        # Remove duplicates and extract preaching times
+        preaching_time = [x.strip()[1:3] for x in JWIZARD.remove_duplicates(los)]
 
         return preaching_h3s, preaching_time
 
     async def fetch_data(self,session, url):
-        # try:
-        async with session.get(url) as response:
-            print("fetching ", url)
-            return await response.text()
-        # except Exception as error:
-        #     print(error)
+        try:
+            async with session.get(url) as response:
+                print("fetching ", url)
+                return await response.text()
+        except Exception as error:
+            logging.error("An unexpected error occured while fetching data: /n", exec_info=True)
 
     def extract_page(self, html):
         soup = BeautifulSoup(html, "html5lib") # If this line causes an error, run 'pip install html5lib' or install html5lib
@@ -187,13 +213,13 @@ class JWIZARD:
                 with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["meeting_parts"], f"{self.pname}.json"), 'w') as f:
                     json.dump(items, f, indent=4)
 
-# month = "September-October"
+# month = "November-December"
 # monthx = get_weeks(month.split("-")[0].strip(), datetime.now().year)
 # monthy = get_weeks(month.split("-")[1].strip(), datetime.now().year)
 # weeklist = {
-#         month.split("-")[0]: monthx,
-#         month.split("-")[-1]: monthy
-#         }
+#     month.split("-")[0]: monthx,
+#     month.split("-")[-1]: monthy
+# }
 # jwizard = JWIZARD(
 #     basepath=config.NEW_LINK, 
 #     weeklist=weeklist, 

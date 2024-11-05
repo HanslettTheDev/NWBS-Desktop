@@ -6,14 +6,11 @@ import nwbs.config as config
 import calendar
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
-from nwbs import logCode
 from nwbs.html import default_program_html, program_setup
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    filename=config.LOG_PATH + f"/_utils_{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.ERROR
+    level=logging.DEBUG
 )
 
 

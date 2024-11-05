@@ -10,7 +10,6 @@ from PyQt6.QtWidgets import (QMessageBox, QVBoxLayout,
 QLabel, QPushButton, QFrame)
 from PyQt6.QtCore import (Qt)
 
-from nwbs import logCode
 from nwbs.home import BaseHomeWindow
 from nwbs.scheduler.utils import get_weeks, get_all_urls
 from nwbs.ui_functions import Tweakfunctions
@@ -25,8 +24,6 @@ import random
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
     level=logging.DEBUG
 )
 

@@ -87,50 +87,9 @@ def save_congname(congregation_name:str):
 def show_records():
 	pass
 
-def create_months():
-	calen = calendar.Calendar()
-	blob = {}
-	for month, value in months.items():
-		x = calen.monthdayscalendar(2024, value)
-		verified = []
-		for value in x:
-			if value[0] == 0:
-				continue
-			verified.append(value)
-
-		blob[month] = verified
-		with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"2024.json"), "w") as f:
-			json.dump(blob, f, indent=2)
-
-# def check_weeks():
-# 	count = 0
-# 	with open(os.path.join(os.getcwd(), f"\years\{date.today().year}.json"), "r") as f:
-# 		blob = json.load(f)
-# 		for month, value in blob.items():
-# 			for v in value:
-# 				print(month, v)
-# 				count += 1
-# 	print(count)
-
-def get_range(month:str, end_month:str):
-	count = 0
-	count2 = 0
-	with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"2024.json"), "r") as f:
-		blob = json.load(f)
-		weeks = blob[month]
-	for bb, value in blob.items():
-		if bb == month:
-			break
-		for vl in value:
-			count += 1
-	for bb, value in blob.items():
-		if bb == end_month:
-			for vl in value:
-				count2 += 1
-			break
-		for vl in value:
-			count2 += 1
-	return [count, count2]
+# def get_range(month:str, end_month:str):
+# 	month_dict = {name: num for num, name in enumerate(calendar.month_name) if num}
+#     month_int = month_dict[month]
 
 # get_range("May", "June")
 # create_months()

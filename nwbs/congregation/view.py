@@ -7,7 +7,6 @@ QFrame, QMessageBox, QDialog, QDialogButtonBox,
 QHBoxLayout, QLineEdit, QTableView, QAbstractItemView,
 QHeaderView
 )
-from nwbs import logCode
 from nwbs.home import BaseHomeWindow
 from nwbs.ui_functions import Tweakfunctions
 from nwbs.congregation.dialogs import *
@@ -17,9 +16,7 @@ from nwbs import css
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.ERROR
+	level=logging.DEBUG
 )
 
 class Congregation(BaseHomeWindow):
@@ -51,7 +48,7 @@ class Congregation(BaseHomeWindow):
 			cong_button_1.clicked.connect(lambda: self.congregation.real_database(self))
 			cong_button_2.clicked.connect(lambda: self.congregation.fake_database(self))
 		except Exception as e:
-			logging.exception("Application crashed. Here is the traceback:", exc_info=True)
+			logging.error("Application crashed when trying to connect to the real/fake database. Here is the traceback:", exc_info=True)
 			sys.exit(1)
 		
 		# add to layout
