@@ -27,7 +27,7 @@ if not os.path.exists(os.path.join(os.getcwd(), config.STORAGE_FOLDER)):
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-	filename=os.path.join(os.getcwd(), config.LOG_PATH, "nwbs.log"),
+	filename=os.path.join(os.getcwd(), config.LOG_PATH + "nwbs.log"),
 	encoding="utf-8",
 	format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
 	level=logging.DEBUG
@@ -53,12 +53,10 @@ class Launcher(QApplication):
 		self.update_day:int = config.CHECK_FOR_UPDATES_DAY
 		self.user_time:int = 2024
 
-		logging.info(f'User Time: {self.user_time}')
 		if self.user_time == self.update_day:
 			updater = Updater()
 			asyncio.run(updater.check_updates())
 		
-		self.the_json = f"{date.today().year}.json"
 		if not create_database(config.DATABASE_NAME):
 			sys.exit(1)
 		

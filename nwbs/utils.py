@@ -16,23 +16,6 @@ from PyQt6.QtWidgets import QMessageBox, QApplication
 from PyQt6.QtCore import qDebug
 
 
-# GLOBALS
-
-months = {
-	'January': 1,
-	'February': 2,
-	'March': 3,
-	'April': 4,
-	'May': 5,
-	'June': 6,
-	'July': 7,
-	'August': 8,
-	'September': 9,
-	'October': 10,
-	'November': 11,
-	'December': 12
-}
-
 def database_exists():
 	'''Checks if the database exists.'''
 	insert_cursor = QSqlQuery("SELECT congregation_name FROM congregation_database")
@@ -86,11 +69,3 @@ def save_congname(congregation_name:str):
 
 def show_records():
 	pass
-
-# def get_range(month:str, end_month:str):
-# 	month_dict = {name: num for num, name in enumerate(calendar.month_name) if num}
-#     month_int = month_dict[month]
-
-# get_range("May", "June")
-# create_months()
-# check()

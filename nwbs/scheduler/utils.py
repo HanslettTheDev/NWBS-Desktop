@@ -191,7 +191,7 @@ class SchedulerUtils:
                 blob[key] = MeetingParser(program=_d, week_range=key).start_parsing()[key]
                 with open(os.path.join(os.getcwd(), self.paths["generated_programs"], filename), "w") as f:
                     json.dump(blob, f, indent=4)
-        logging.debug(f"Program saved: FileName > {filename}.json")
+        logging.debug(f"Program saved: FileName > {filename}")
         return True
     
     def create_program(self, program_name: str, is_schedule: bool = False) -> str:
