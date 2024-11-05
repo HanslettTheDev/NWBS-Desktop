@@ -8,7 +8,6 @@ if updates or not.
 import sys
 import os
 import resources
-import random
 import logging
 import asyncio
 import nwbs.config as config
@@ -24,12 +23,13 @@ if not os.path.exists(os.path.join(os.getcwd(), config.STORAGE_FOLDER)):
 	'''Create the dir for app usage'''
 	for sfn in config.STORAGE_FOLDER_NAMES:
 		os.makedirs(os.path.join(os.getcwd(), config.STORAGE_FOLDER, sfn))
+	logging.info(f"Storage folder created: {config.STORAGE_FOLDER}")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-	filename=os.path.join(os.getcwd(), config.LOG_PATH + "nwbs.log"),
+	filename=os.path.join(os.getcwd(), config.LOG_PATH, config.LOG_FILE),
 	encoding="utf-8",
-	format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
+	format='%(asctime)s: %(name)s: %(funcName)s: %(levelname)s: %(message)s',
 	level=logging.DEBUG
 )
 
@@ -40,7 +40,7 @@ if config.PRODUCTION:
 		create_database = getattr(import_module('scripts.nwbs.utils'), 'create_database')
 		logging.info(f'Successfully imported: Application version: {__version__}')
 	except ModuleNotFoundError:
-		logging.error('Module Not Found. >> traceback erorr below', exc_info=True)
+		logging.critical('Module Not Found. >> traceback erorr below', exc_info=True)
 		sys.exit(1)
 else:
 	from nwbs.utils import create_database
@@ -65,10 +65,11 @@ class Launcher(QApplication):
 			self.home_window.show()
 			logging.debug('Main Window Running >>')
 		except Exception:
-			logging.exception("Application crashed. Below is why:", exc_info=True)
+			logging.critical("Application crashed. Below is why:", exc_info=True)
 			sys.exit(1)
+
 
 if __name__ == '__main__':
 	app = Launcher(sys.argv)
-	sys.exit(app.exec())
 	logging.info('Application Closed')
+	sys.exit(app.exec())

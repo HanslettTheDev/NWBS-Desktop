@@ -15,9 +15,6 @@ from nwbs import css
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-	level=logging.DEBUG
-)
 
 class Congregation(BaseHomeWindow):
 	def congregation_view(self):
@@ -48,7 +45,7 @@ class Congregation(BaseHomeWindow):
 			cong_button_1.clicked.connect(lambda: self.congregation.real_database(self))
 			cong_button_2.clicked.connect(lambda: self.congregation.fake_database(self))
 		except Exception as e:
-			logging.error("Application crashed when trying to connect to the real/fake database. Here is the traceback:", exc_info=True)
+			logging.critical("Application crashed when trying to connect to the real/fake database. Here is the traceback:", exc_info=True)
 			sys.exit(1)
 		
 		# add to layout

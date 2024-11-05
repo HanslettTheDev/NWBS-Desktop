@@ -10,9 +10,6 @@ import random
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-	level=logging.DEBUG
-)
 
 class Reports(BaseHomeWindow):
 	def reports_view(self):

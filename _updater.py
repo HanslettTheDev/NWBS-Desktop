@@ -9,11 +9,6 @@ import zipfile
 from PyQt6.QtWidgets import (QApplication, QMessageBox)
 
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-	level=logging.DEBUG
-)
-
 class Updater():
 	def __init__(self):
 		self.api = config.API_LINK

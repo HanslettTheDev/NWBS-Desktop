@@ -23,9 +23,7 @@ import logging
 import random
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.DEBUG
-)
+
 
 class Scheduler(BaseHomeWindow):
     def scheduler_view(self):
@@ -172,7 +170,9 @@ class Scheduler(BaseHomeWindow):
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")
             return
         except Exception as e:
-            logging.error("Unexpected error occured while fetching for a program:", exc_info=True) 
+            logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            QMessageBox.critical(self, "Unexpected Error Occured", "There was an unexpected error. Please try again") 
+            return
         
         parts = self.sutils.get_all_parts(dialog.combo.currentText())
         self.month_programs = []

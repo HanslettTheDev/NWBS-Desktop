@@ -9,10 +9,6 @@ from jinja2 import Environment, FileSystemLoader
 from nwbs.html import default_program_html, program_setup
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.DEBUG
-)
-
 
 def get_weeks(month: str, year: int):
     month_dict = {name: num for num, name in enumerate(calendar.month_name) if num}

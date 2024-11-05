@@ -11,6 +11,8 @@ CHECK_FOR_UPDATES_DAY = 15
 
 STORAGE_FOLDER = "app_data"
 
+LOG_FILE = "nwbs.log"
+
 LOG_PATH = STORAGE_FOLDER + "/" + "logs"
 
 STORAGE_FOLDER_NAMES = [

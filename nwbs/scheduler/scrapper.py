@@ -88,10 +88,11 @@ class JWIZARD:
     async def fetch_data(self,session, url):
         try:
             async with session.get(url) as response:
-                print("fetching ", url)
+                logging.info("fetching {}".format(url))
                 return await response.text()
         except Exception as error:
             logging.error("An unexpected error occured while fetching data: /n", exec_info=True)
+            return
 
     def extract_page(self, html):
         soup = BeautifulSoup(html, "html5lib") # If this line causes an error, run 'pip install html5lib' or install html5lib
@@ -102,7 +103,7 @@ class JWIZARD:
             SectionX0 = WeekItems.select("header")
             SectionX1 = WeekItems.select(".bodyTxt")  
         except AttributeError:
-            print(f"A Link is broken, \n{html}")
+            logging.warning(f"A Link is broken, \n{html}")
         
         return [SectionX0, SectionX1]
         
@@ -199,9 +200,10 @@ class JWIZARD:
 
             for url in self.links:
                 if url in link_patches.keys():
-                    print("Needs a patch: Broken url -> ", url)
+                    print("Broken url found -> ", url)
                     url = link_patches[url]
                     print(f"Applied Patch successfully: New url -> {url}")
+                    logging.info(f"Applied Patch successfully: New url -> {url}")
                 tasklist.append(self.fetch_data(session, url))
 
             htmls = await asyncio.gather(*tasklist)
