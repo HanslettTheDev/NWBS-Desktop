@@ -9,29 +9,12 @@ import calendar
 import json
 import sys
 import os
-import config
+import config as config
 from datetime import date
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 from PyQt6.QtWidgets import QMessageBox, QApplication
 from PyQt6.QtCore import qDebug
 
-
-# GLOBALS
-
-months = {
-	'January': 1,
-	'February': 2,
-	'March': 3,
-	'April': 4,
-	'May': 5,
-	'June': 6,
-	'July': 7,
-	'August': 8,
-	'September': 9,
-	'October': 10,
-	'November': 11,
-	'December': 12
-}
 
 def database_exists():
 	'''Checks if the database exists.'''
@@ -86,52 +69,3 @@ def save_congname(congregation_name:str):
 
 def show_records():
 	pass
-
-def create_months():
-	calen = calendar.Calendar()
-	blob = {}
-	for month, value in months.items():
-		x = calen.monthdayscalendar(2024, value)
-		verified = []
-		for value in x:
-			if value[0] == 0:
-				continue
-			verified.append(value)
-
-		blob[month] = verified
-		with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"2024.json"), "w") as f:
-			json.dump(blob, f, indent=2)
-
-# def check_weeks():
-# 	count = 0
-# 	with open(os.path.join(os.getcwd(), f"\years\{date.today().year}.json"), "r") as f:
-# 		blob = json.load(f)
-# 		for month, value in blob.items():
-# 			for v in value:
-# 				print(month, v)
-# 				count += 1
-# 	print(count)
-
-def get_range(month:str, end_month:str):
-	count = 0
-	count2 = 0
-	with open(os.path.join(os.getcwd(), config.FOLDER_REFERENCES["years"], f"2024.json"), "r") as f:
-		blob = json.load(f)
-		weeks = blob[month]
-	for bb, value in blob.items():
-		if bb == month:
-			break
-		for vl in value:
-			count += 1
-	for bb, value in blob.items():
-		if bb == end_month:
-			for vl in value:
-				count2 += 1
-			break
-		for vl in value:
-			count2 += 1
-	return [count, count2]
-
-# get_range("May", "June")
-# create_months()
-# check()

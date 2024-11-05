@@ -2,7 +2,7 @@ clean-logs:
 	del /S/Q .\bin\logs\*
 
 build-exe:
-	pyinstaller "NWBS Client.spec" 
+	pyinstaller --noconfirm --clean "NWBS Client.spec" 
 
 test-scrapper:
 	python nwbs\scheduler\scrapper.py

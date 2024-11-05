@@ -5,8 +5,7 @@ home/__pycache__
 interface/__pycache__
 login/__pycache__
 dist
-bin
-usr
+app_data
 build
 home.ui
 login.ui
@@ -17,3 +16,4 @@ NWBS Client.spec
 .vscode
 set_update.py
 backup
+Gadugi

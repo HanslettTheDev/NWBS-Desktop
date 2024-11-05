@@ -223,7 +223,7 @@ default_program_html = '''
     <div class="header">
         <div class="titles">
             <h4>BONENDALE PIDGIN</h4>
-            <h2>OUR CHRISTIAN LIFE AND PREACHING MEETING</h2>
+            <h2>MIDWEEK MEETING SCHEDULE</h2>
         </div>
         <div class="line1"></div>
     </div>
@@ -247,6 +247,13 @@ default_program_html = '''
             </td>
         </tr>
         <tr>
+            <td class="tdfix"></td>
+            <td class="tdfix2"><a class="right nwb-roles">Field Service Group:</a></td>
+            <td style="width: 250px;">
+                <strong>{{ program["group"].title() }}</strong>
+            </td>
+        </tr>
+        <tr>
             <td>6:30<i>&#9679;</i><strong class="emph">{{ d['opening_song'] }}</strong></td>
             <td><a class="right nwb-roles">Prayer:</a></td>
             <td><a>{{ program["opening_prayer"] }}</td>
@@ -260,25 +267,24 @@ default_program_html = '''
             <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
                     class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
             <td class="nwb-roles">
-            {{ program["group"].title() }}
+            <a class="nwb-roles">Second Hall</a>
             </td>
             <td><a class="nwb-roles">Main Hall</a></td>
         </tr>
         <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">{{ d['fine_fine_lesson'] }}</strong>(10 min.)</td>
+            <td>6:37 <strong style="color: rgb(87,90,93);"> 1. </strong><strong
+                    class="emph">{{ d['fine_fine_lesson'] }}</strong><b> (10 min.)</b></td>
             <td></td>
             <td>{{ program["fine_fine_lesson"] }}</td>
         </tr>
         <tr>
-            <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
+            <td>6:47 <strong style="color: rgb(87,90,93);"> 2. </strong><strong>Fine-Fine Things Wey You See for
+                    Bible (10 min.)</strong></td>
             <td></td>
             <td>{{ program["fine_fine_things_weh_you_see"] }}</td>
         </tr>
         <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">{{ d['bible_reading_point'].strip("th study") }}</a>): (4 min.)</strong>
+            <td>6:57 <strong style="color: rgb(87,90,93);"> 3. </strong><strong>Bible Reading (4 min.)</strong>
                 <a class="right nwb-roles">Student:</a></td>
             <td>{{ program["bible_reading_secondhall"] }}</td>
             <td>{{ program["bible_reading"] }}</td>
@@ -286,20 +292,15 @@ default_program_html = '''
         <tr>
             <td colspan="1" class="tdfix" style="background-color: rgb(190,137,0); height: 30px;"><a
                     class="nwb-title heading">DE USE ALL YOUR HEART PREACH</a></td>
-            <td class="nwb-roles"></td>
+            <td class="nwb-roles">Second Hall</td>
             <td class="nwb-roles">Main Hall</td>
         </tr>
         {% for step, parts in zip2(d['preaching']) %}
         <tr>
             <td>7:{% if step == 0 %}02
                 {% else %}{{ tostring(pt[d.month][step-1]).zfill(2) }}{% endif %}
-                <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>{{ parts.strip(":") }}
-                    {% if d['preaching_points'][step] == "" %}
-                    {% else %}
-                    (<a class="emph">{{ d['preaching_points'][step] }}</a>)
-                    {% endif %}
-                    : ({{ d['preaching_time'][step] }} min.)</strong>
+                <strong style="color: rgb(190,137,0);">  {{ step + 4 }}.  </strong>
+                <strong>{{ parts.strip(":") }} ({{ d['preaching_time'][step] }} min.)</strong>
                 <a class="right nwb-roles">Student:<br>{% if parts.strip(":") in ["Talk", "Return Visit Video", "First Time Video", "Memorial Invitation Video"] %}
                 {% else %}Assistant:{% endif %}</a>
             </td>
@@ -325,17 +326,19 @@ default_program_html = '''
             <td></td>
             <td></td>
         </tr>
+        {% set last = namespace(val=0) %}
         {% for step, lac in zip2(d['middle_parts']) %}
         <tr>
             <td>7:{% if step == 0 %}21{% else %}{{ tostring(mt[d.month][step-1]) }}{% endif %}
-                <i style="color: rgb(126,0,36);">&#9679;</i><strong>{{ lac.strip(":") }}:
+                <strong style="color: rgb(126,0,36);">  {{ step + length(d['preaching']) + 4 }}. </strong><strong>{{ lac.strip(":") }}:
                     ({{ d['middle_parts_time'][step] }} min.)</strong></td>
             <td></td>
             <td><strong>{{ program["middle_parts"][step] }}</strong></td>
         </tr>
+        {% set last.val = step + length(d['preaching']) + 4 %}
         {% endfor %}
         <tr>
-            <td>7:36<i style="color: rgb(126,0,36);">&#9679;</i><strong>Congregation Bible Study <a
+            <td>7:36<strong style="color: rgb(126,0,36);">  {{ last.val + 1 }}. </strong><strong>Congregation Bible Study <a
                         class="emph">({{ d['book_study'] }}):</a> (30 min.)</strong></td>
             <td><a class="right nwb-roles">Conductor/Reader:</a></td>
             <td><a>{{ program["cong_bible_study"]["student"] }}/{{ program["cong_bible_study"]["assistant"] }} </a></td>
@@ -550,25 +553,24 @@ program_setup = '''
             <td colspan="1" style="background-color: rgb(87,90,93); height: 30px; break-inside: avoid;"><a
                     class="nwb-title heading">FINE-FINE LESSON FROM BIBLE</a></td>
             <td class="nwb-roles">
-            {{ program["group"].title() }}
+            Second Hall
             </td>
             <td><a class="nwb-roles">Main Hall</a></td>
         </tr>
         <tr>
-            <td>6:37<i style="color: rgb(87,90,93);">&#9679;</i><strong
-                    class="emph">{{ d['fine_fine_lesson'] }}</strong>(10 min.)</td>
+            <td>6:37<i style="color: rgb(87,90,93);">1. </i><strong
+                    class="emph">{{ d['fine_fine_lesson'] }}</strong>  (10 min.)</td>
             <td></td>
             <td><input type="text"></td>
         </tr>
         <tr>
             <td>6:47<i style="color: rgb(87,90,93);">&#9679;</i><strong>Fine-Fine Things Wey You See for
-                    Bible:</strong>(10 min.)</td>
+                    Bible</strong>  (10 min.)</td>
             <td></td>
             <td><input type="text"></td>
         </tr>
         <tr>
-            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (<a
-                        class="emph">{{ d['bible_reading_point'].strip("th study") }}</a>): (4 min.)</strong>
+            <td>6:57<i style="color: rgb(87,90,93);">&#9679;</i><strong>Bible Reading (4 min.)</strong>
                 <a class="right nwb-roles">Student:</a></td>
             <td><input type="text"></td>
             <td><input type="text"></td>
@@ -584,12 +586,7 @@ program_setup = '''
             <td>7:{% if step == 0 %}02
                 {% else %}{{ tostring(pt[d.month][step-1]).zfill(2) }}{% endif %}
                 <i style="color: rgb(190,137,0);">&#9679;</i>
-                <strong>{{ parts.strip(":") }}
-                    {% if d['preaching_points'][step] == "" %}
-                    {% else %}
-                    (<a class="emph">{{ d['preaching_points'][step] }}</a>)
-                    {% endif %}
-                    : ({{ d['preaching_time'][step] }} min.)</strong>
+                <strong>{{ parts.strip(":") }} ({{ d['preaching_time'][step] }} min.)</strong>
                 <a class="right nwb-roles">Student:<br>{% if parts.strip(":") in ["Talk", "Return Visit Video", "First Time Video", "Memorial Invitation Video"] %}
                 {% else %}Assistant:{% endif %}</a>
             </td>

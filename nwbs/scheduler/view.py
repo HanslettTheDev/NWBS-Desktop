@@ -5,30 +5,24 @@ import os
 import random
 import aiohttp
 import logging
-import config
+import config as config
 from PyQt6.QtWidgets import (QMessageBox, QVBoxLayout,
 QLabel, QPushButton, QFrame)
 from PyQt6.QtCore import (Qt)
 
-from nwbs import logCode
 from nwbs.home import BaseHomeWindow
 from nwbs.scheduler.utils import get_weeks, get_all_urls
 from nwbs.ui_functions import Tweakfunctions
 from nwbs.utils import database_exists
 from nwbs.scheduler.scrapper import JWIZARD
 from nwbs.scheduler.dialogs import *
-from config import FOLDER_REFERENCES
 # from home.css import congregation_view_css
 
 import logging
 import random
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.DEBUG
-)
+
 
 class Scheduler(BaseHomeWindow):
     def scheduler_view(self):
@@ -129,9 +123,9 @@ class Scheduler(BaseHomeWindow):
         
         if text != "":
             output = self.sutils.create_program(text.split(" program")[0])
-            output2 = self.sutils.create_program(text.split(" program")[0], is_schedule=True)
+            # output2 = self.sutils.create_program(text.split(" program")[0], is_schedule=True)
             self.sutils.preview_page(text.split(" program")[0], output)
-            self.sutils.preview_page(text.split(" program")[0] + " scheduler", output2) # for the schedule to fill names
+            # self.sutils.preview_page(text.split(" program")[0] + " scheduler", output2) # for the schedule to fill names
             QMessageBox.information(self, "Downloading", "You will view this program in your web browser and then save it using the print function", QMessageBox.StandardButton.Ok)
 
         # make the buttons checkable
@@ -163,16 +157,21 @@ class Scheduler(BaseHomeWindow):
                 )
                 asyncio.run(jwizard.main())
         except aiohttp.client_exceptions.ClientConnectorError:
+            logger.error("Unexpected error occured while fetching for a program: ", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", "No Internet Connection. Please connect to the internet and try again")
             return
         except AttributeError:
-            logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            logger.error("Unexpected error occured while fetching for a program: {}", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")		
             return
         except IndexError:
-            logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            logger.error("Unexpected error occured while fetching for a program:", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")
-            return 
+            return
+        except Exception as e:
+            logger.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            QMessageBox.critical(self, "Unexpected Error Occured", "There was an unexpected error. Please try again") 
+            return
         
         parts = self.sutils.get_all_parts(dialog.combo.currentText())
         self.month_programs = []

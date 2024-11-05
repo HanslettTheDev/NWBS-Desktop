@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import (QMessageBox)
 
-from nwbs import logCode
 from nwbs.home import BaseHomeWindow
 from nwbs.ui_functions import Tweakfunctions
 from nwbs.utils import *
@@ -11,12 +10,6 @@ import random
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename=config.LOG_PATH + f"/__nwbs__{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.ERROR
-)
-
 
 class Reports(BaseHomeWindow):
 	def reports_view(self):

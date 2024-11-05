@@ -2,48 +2,33 @@ import os
 import json
 import webbrowser
 import logging
-import config
+import config as config
 import calendar
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
-from nwbs import logCode
 from nwbs.html import default_program_html, program_setup
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename=config.LOG_PATH + f"/_utils_{logCode()[0]}_{logCode()[1]}.log",
-    format='%(asctime)s: %(funcName)s: %(levelname)s: %(message)s',
-    level=logging.ERROR
-)
-
 
 def get_weeks(month: str, year: int):
     month_dict = {name: num for num, name in enumerate(calendar.month_name) if num}
     month_int = month_dict[month]
     
     all_weeks = calendar.Calendar().monthdayscalendar(year, month_int)
-
-    weeks = []
-
-    for items in all_weeks:
-        if items[0] == 0:
-            #first dictionary object is zero due to enumerate's implementation
-            continue
-        if items[-1] == 0:
-            non_zero_weeks = [x for x in items if x != 0]
-            count = 1
-            while len(non_zero_weeks) != 7: 
-                non_zero_weeks.append(count)
-                count += 1
-
-            # grab the id of the current month and add 1 on the id to get
-            # the next month and append to the string
-            next_month = [
-                key for key, value in month_dict.items() if month_dict[month] + 1 == value
-            ]
-            weeks.append(f"{non_zero_weeks[0]}-{next_month[-1]}-{non_zero_weeks[-1]}")
-            continue
-        weeks.append(f"{items[0]}-{items[-1]}")
+    weeks = [f"{week[0]}-{week[-1]}" for week in all_weeks if 0 not in week]
+    last_week = all_weeks[-1]
+        
+    if last_week[-1] == 0:
+        non_zero_weeks = [x for x in last_week if x != 0]
+        # grab the id of the current month and add 1 on the id to get
+        # the next month and append to the string
+        #if the month id is 12 = december, just reset it back to 1 = January 
+        next_month_id = month_int + 1 if month_int != 12 else 1
+        next_month_name = [
+            key for key, value in month_dict.items() if next_month_id == value
+        ][-1]
+        weeks.append(f"{non_zero_weeks[0]}-{next_month_name}-{len(last_week)-len(non_zero_weeks)}")
+            
     return weeks
 
 
@@ -202,54 +187,73 @@ class SchedulerUtils:
                 blob[key] = MeetingParser(program=_d, week_range=key).start_parsing()[key]
                 with open(os.path.join(os.getcwd(), self.paths["generated_programs"], filename), "w") as f:
                     json.dump(blob, f, indent=4)
-        logger.debug(f"Program saved: FileName > {filename}.json")
+        logger.info(f"Program saved: FileName > {filename}")
         return True
     
-    def create_program(self, program_name, is_schedule:bool = False):
-        # Get the data and programs from the json and pass it as objects to the txt
-        with open(os.path.join(os.getcwd(), self.paths["generated_programs"], program_name + " program.json"), "r", encoding="utf-8") as f:
-            blob = json.load(f)
-        
-        with open(os.path.join(os.getcwd(), self.paths["meeting_parts"], program_name + ".json"), "r", encoding="utf-8") as f:
-            blob2 = json.load(f)
+    def create_program(self, program_name: str, is_schedule: bool = False) -> str:
+        """Generate a program template using the given program name and data."""
+        program_data_path = os.path.join(
+            os.getcwd(), self.paths["generated_programs"], f"{program_name} program.json"
+        )
+        meeting_parts_path = os.path.join(
+            os.getcwd(), self.paths["meeting_parts"], f"{program_name}.json"
+        )
 
-        # create the file and write the defaults to it
-        with open(os.path.join(os.getcwd(), self.paths["templates"], program_name + ".html"), "w") as f:
-            f.write(default_program_html)
-        
-        if is_schedule:
-            with open(os.path.join(os.getcwd(), self.paths["templates"], program_name + " scheduler.html"), "w") as f:
-                f.write(program_setup)
-        
-        # get only the dicts from the json
-        programs = [value for value in blob2.values()]
+        with open(program_data_path, "r", encoding="utf-8") as f:
+            program_data = json.load(f)
 
-        # do clean checks to get time for middle parts and preaching
-        time_stands_1 = []
-        time_stands_2 = []
-        for d in programs:
-            pt_time, mp_time = {},{}
-            s = self.update_time(d["preaching_time"], d["middle_parts_time"])
-            pt_time[d["month"]], mp_time[d["month"]] = s[0], s[1]
-            time_stands_1.append(pt_time)
-            time_stands_2.append(mp_time)
-        
-        try:
-            template_env = Environment(loader=FileSystemLoader(f'{os.path.join(os.getcwd(), self.paths["templates"])}'))
-            template_object = None
-            if not is_schedule:
-                template_object = template_env.get_template(f'{program_name}.html')
-            else:
-                template_object = template_env.get_template(f'{program_name} scheduler.html')
-            output = template_object.render(
-                programs=blob, data=blob2, zip=zip, zip2=enumerate, 
-                length=len, preachingt=time_stands_1, middlepartst=time_stands_2, 
-                tostring=str, toint=int
+        with open(meeting_parts_path, "r", encoding="utf-8") as f:
+            meeting_parts = json.load(f)
+
+        template_paths = {
+            "program": os.path.join(
+                os.getcwd(), self.paths["templates"], f"{program_name}.html"
+            ),
+            "schedule": os.path.join(
+                os.getcwd(), self.paths["templates"], f"{program_name} scheduler.html"
+            ),
+        }
+
+        for path, content in (
+            (template_paths["program"], default_program_html),
+            (template_paths["schedule"], program_setup),
+        ):
+            with open(path, "w") as f:
+                f.write(content)
+
+        preaching_time_stands = []
+        middle_parts_time_stands = []
+        for meeting_part in meeting_parts.values():
+            preaching_time, middle_parts_time = {}, {}
+            preaching_time[meeting_part["month"]], middle_parts_time[
+                meeting_part["month"]
+            ] = self.update_time(
+                meeting_part["preaching_time"], meeting_part["middle_parts_time"]
             )
-            logger.debug("Templates successfully generated")
+            preaching_time_stands.append(preaching_time)
+            middle_parts_time_stands.append(middle_parts_time)
+
+        try:
+            template_env = Environment(
+                loader=FileSystemLoader(self.paths["templates"])
+            )
+            template_object = template_env.get_template(
+                f"{program_name}{' scheduler' if is_schedule else ''}.html"
+            )
+            output = template_object.render(
+                programs=program_data,
+                data=meeting_parts,
+                zip=zip,
+                zip2=enumerate,
+                length=len,
+                preachingt=preaching_time_stands,
+                middlepartst=middle_parts_time_stands,
+                tostring=str,
+                toint=int,
+            )
             return output
         except Exception as e:
-            logger.exception(f"An error occured while generating a program. See Error >>", exc_info=True)
+            raise e
 
     def update_time(self, preaching_time:list, middle_time:list) -> tuple:
         default_time = 2

@@ -5,7 +5,6 @@ QComboBox, QLabel, QFormLayout, QDialogButtonBox, QWidget,
  QTextBrowser, QLineEdit, QCompleter, QPushButton, QScrollArea)
 
 from config import FOLDER_REFERENCES
-from nwbs.utils import get_range
 
 from PyQt6.QtSql import QSqlQuery
 from PyQt6.QtCore import (Qt, QRect, QSize)
@@ -384,7 +383,6 @@ class MonthDialog(QDialog):
     def accept(self):
         '''Get the months and split them up for processing'''
         selected_months = self.combo.currentText().split("-")
-        self.trange = get_range(selected_months[0], selected_months[1])
         super().accept()
         
 class Preview(QWidget):
