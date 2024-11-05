@@ -8,6 +8,7 @@ import zipfile
 
 from PyQt6.QtWidgets import (QApplication, QMessageBox)
 
+logger = logging.getLogger(__name__)
 
 class Updater():
 	def __init__(self):
@@ -20,7 +21,7 @@ class Updater():
 				async with session.get(self.api) as response:
 					blob = await response.json()
 		except Exception as e:
-			logging.debug("Unexpected Error Occured While Checking For Updates! >> traceback", exc_info=True)
+			logger.debug("Unexpected Error Occured While Checking For Updates! >> traceback", exc_info=True)
 			return UpdaterMessages(sys.argv).error()
 		
 		latest_version = blob["tag_name"]
@@ -35,7 +36,7 @@ class Updater():
 			if not self.install_updates(url.split("/")[-1]):
 				return UpdaterMessages(sys.argv).install_error()
 			
-			logging.debug(f"NWBS Client updated: Version Number: {self.current_version}")
+			logger.debug(f"NWBS Client updated: Version Number: {self.current_version}")
 			
 			UpdaterMessages(sys.argv).success()
 			return True
@@ -69,7 +70,7 @@ class Updater():
 			try:
 				zipfile.ZipFile(path_to_file).extractall()
 			except Exception as e:
-				logging.error("Something went wrong when decompressing >> traceback", exc_info=True)
+				logger.error("Something went wrong when decompressing >> traceback", exc_info=True)
 				return False
 		self.delete_update_file(path_to_file)
 		return True

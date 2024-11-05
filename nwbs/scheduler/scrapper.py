@@ -5,10 +5,11 @@ import aiohttp
 import os
 import nwbs.config as config
 from patches import link_patches, los_index_patches
-from datetime import datetime
 from bs4 import BeautifulSoup
-from nwbs.scheduler.utils import MeetingParser, get_weeks
-from nwbs.scheduler.utils import get_all_urls
+# from nwbs.scheduler.utils import MeetingParser, get_weeks
+# from nwbs.scheduler.utils import get_all_urls
+
+logger = logging.getLogger(__name__)
 
 class JWIZARD:
     def __init__(self, basepath = "", weeklist={}, pname="nwb", links=[]):
@@ -88,10 +89,10 @@ class JWIZARD:
     async def fetch_data(self,session, url):
         try:
             async with session.get(url) as response:
-                logging.info("fetching {}".format(url))
+                logger.debug("fetching {}".format(url))
                 return await response.text()
         except Exception as error:
-            logging.error("An unexpected error occured while fetching data: /n", exec_info=True)
+            logger.error("An unexpected error occured while fetching data: /n", exec_info=True)
             return
 
     def extract_page(self, html):
@@ -103,7 +104,7 @@ class JWIZARD:
             SectionX0 = WeekItems.select("header")
             SectionX1 = WeekItems.select(".bodyTxt")  
         except AttributeError:
-            logging.warning(f"A Link is broken, \n{html}")
+            logger.warning(f"A Link is broken, \n{html}")
         
         return [SectionX0, SectionX1]
         
@@ -203,7 +204,7 @@ class JWIZARD:
                     print("Broken url found -> ", url)
                     url = link_patches[url]
                     print(f"Applied Patch successfully: New url -> {url}")
-                    logging.info(f"Applied Patch successfully: New url -> {url}")
+                    logger.info(f"Applied Patch successfully: New url -> {url}")
                 tasklist.append(self.fetch_data(session, url))
 
             htmls = await asyncio.gather(*tasklist)

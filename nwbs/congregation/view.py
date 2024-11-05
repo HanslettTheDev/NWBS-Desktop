@@ -1,5 +1,4 @@
 import logging
-import nwbs.config as config
 import sys
 
 from PyQt6.QtWidgets import (QPushButton, QVBoxLayout, QLabel, 
@@ -45,7 +44,7 @@ class Congregation(BaseHomeWindow):
 			cong_button_1.clicked.connect(lambda: self.congregation.real_database(self))
 			cong_button_2.clicked.connect(lambda: self.congregation.fake_database(self))
 		except Exception as e:
-			logging.critical("Application crashed when trying to connect to the real/fake database. Here is the traceback:", exc_info=True)
+			logger.critical("Application crashed when trying to connect to the real/fake database. Here is the traceback:", exc_info=True)
 			sys.exit(1)
 		
 		# add to layout

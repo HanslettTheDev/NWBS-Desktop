@@ -12,10 +12,11 @@ import logging
 import asyncio
 import nwbs.config as config
 
-from datetime import date, datetime
 from importlib import import_module
 from PyQt6.QtWidgets import QApplication
 from _updater import Updater
+
+
 
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
@@ -23,7 +24,8 @@ if not os.path.exists(os.path.join(os.getcwd(), config.STORAGE_FOLDER)):
 	'''Create the dir for app usage'''
 	for sfn in config.STORAGE_FOLDER_NAMES:
 		os.makedirs(os.path.join(os.getcwd(), config.STORAGE_FOLDER, sfn))
-	logging.info(f"Storage folder created: {config.STORAGE_FOLDER}")
+		logging.debug(f"Created Storage Folder: {os.path.join(os.getcwd(), config.STORAGE_FOLDER, sfn)}")
+	logging.info("Storage Folders created successfully")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -35,12 +37,13 @@ logging.basicConfig(
 
 if config.PRODUCTION:
 	try:
-		__version__ = getattr(import_module('scripts'), '__version__')
-		home = getattr(import_module('scripts.nwbs.home'), 'BaseHomeWindow')
-		create_database = getattr(import_module('scripts.nwbs.utils'), 'create_database')
-		logging.info(f'Successfully imported: Application version: {__version__}')
+		__version__ = getattr(import_module('nwbs'), '__version__')
+		# nwbs = getattr(import_module('nwbs'), 'nwbs')
+		home = getattr(import_module('nwbs.home'), 'BaseHomeWindow')
+		create_database = getattr(import_module('nwbs.utils'), 'create_database')
+		logger.info(f'Successfully imported: Application version: {__version__}')
 	except ModuleNotFoundError:
-		logging.critical('Module Not Found. >> traceback erorr below', exc_info=True)
+		logger.critical('Module Not Found. >> traceback erorr below', exc_info=True)
 		sys.exit(1)
 else:
 	from nwbs.utils import create_database
@@ -63,13 +66,12 @@ class Launcher(QApplication):
 		try:
 			self.home_window = home()
 			self.home_window.show()
-			logging.debug('Main Window Running >>')
+			logger.debug('Main Window Running >>')
 		except Exception:
-			logging.critical("Application crashed. Below is why:", exc_info=True)
+			logger.critical("Application crashed. Below is why:", exc_info=True)
 			sys.exit(1)
 
 
 if __name__ == '__main__':
 	app = Launcher(sys.argv)
-	logging.info('Application Closed')
 	sys.exit(app.exec())

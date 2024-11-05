@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ## Usage
 After installing the dependencies, you can run the manage.py script to start the application
 ```cmd
-python manage.py
+python app.py
 ```
 
 ## Contributing

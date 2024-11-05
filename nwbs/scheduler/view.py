@@ -16,7 +16,6 @@ from nwbs.ui_functions import Tweakfunctions
 from nwbs.utils import database_exists
 from nwbs.scheduler.scrapper import JWIZARD
 from nwbs.scheduler.dialogs import *
-from nwbs.config import FOLDER_REFERENCES
 # from home.css import congregation_view_css
 
 import logging
@@ -158,19 +157,19 @@ class Scheduler(BaseHomeWindow):
                 )
                 asyncio.run(jwizard.main())
         except aiohttp.client_exceptions.ClientConnectorError:
-            logging.error("Unexpected error occured while fetching for a program: ", exc_info=True)
+            logger.error("Unexpected error occured while fetching for a program: ", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", "No Internet Connection. Please connect to the internet and try again")
             return
         except AttributeError:
-            logging.error("Unexpected error occured while fetching for a program: {}", exc_info=True)
+            logger.error("Unexpected error occured while fetching for a program: {}", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")		
             return
         except IndexError:
-            logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            logger.error("Unexpected error occured while fetching for a program:", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error", f"Current month selected {dialog.combo.currentText()} is yet to have a complete program or has a bug")
             return
         except Exception as e:
-            logging.error("Unexpected error occured while fetching for a program:", exc_info=True)
+            logger.error("Unexpected error occured while fetching for a program:", exc_info=True)
             QMessageBox.critical(self, "Unexpected Error Occured", "There was an unexpected error. Please try again") 
             return
         

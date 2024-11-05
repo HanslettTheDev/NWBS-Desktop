@@ -187,7 +187,7 @@ class SchedulerUtils:
                 blob[key] = MeetingParser(program=_d, week_range=key).start_parsing()[key]
                 with open(os.path.join(os.getcwd(), self.paths["generated_programs"], filename), "w") as f:
                     json.dump(blob, f, indent=4)
-        logging.debug(f"Program saved: FileName > {filename}")
+        logger.info(f"Program saved: FileName > {filename}")
         return True
     
     def create_program(self, program_name: str, is_schedule: bool = False) -> str:
@@ -276,7 +276,7 @@ class SchedulerUtils:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(html)
         webbrowser.open(file_path)
-        logging.debug(f"Program created: Location >> {file_path}")
+        logger.debug(f"Program created: Location >> {file_path}")
 
     def test_pdf(self, html=""):
         pass

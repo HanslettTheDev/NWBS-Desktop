@@ -1,11 +1,11 @@
-VERSION_NUMBER = "V1.0.4"
+VERSION_NUMBER = "V1.0.7"
 DATABASE_NAME = "congregation.sqlite"
 
 API_LINK = "https://api.github.com/repos/hanslettthedev/nwbs-desktop/releases/latest"
 
 NEW_LINK = "https://www.jw.org/wes-x-pgw/library/jw-meeting-workbook/{monthx}-{year}-mwb/Life-and-Preaching-Meeting-Workbook-for-{current_month}-{week}-{year}/"
 
-PRODUCTION = False
+PRODUCTION = True
 
 CHECK_FOR_UPDATES_DAY = 15
 
