@@ -5,8 +5,6 @@ API_LINK = "https://api.github.com/repos/hanslettthedev/nwbs-desktop/releases/la
 
 NEW_LINK = "https://www.jw.org/wes-x-pgw/library/jw-meeting-workbook/{monthx}-{year}-mwb/Life-and-Preaching-Meeting-Workbook-for-{current_month}-{week}-{year}/"
 
-PRODUCTION = True
-
 CHECK_FOR_UPDATES_DAY = 15
 
 STORAGE_FOLDER = "app_data"

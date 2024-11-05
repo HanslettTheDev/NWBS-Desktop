@@ -33,19 +33,8 @@ logging.basicConfig(
 	level=logging.DEBUG
 )
 
-if config.PRODUCTION:
-	try:
-		__version__ = getattr(import_module('nwbs'), '__version__')
-		# nwbs = getattr(import_module('nwbs'), 'nwbs')
-		home = getattr(import_module('nwbs.home'), 'BaseHomeWindow')
-		create_database = getattr(import_module('nwbs.utils'), 'create_database')
-		logger.info(f'Successfully imported: Application version: {__version__}')
-	except ModuleNotFoundError:
-		logger.critical('Module Not Found. >> traceback erorr below', exc_info=True)
-		sys.exit(1)
-else:
-	from nwbs.utils import create_database
-	from nwbs.home import BaseHomeWindow as home
+from nwbs.utils import create_database
+from nwbs.home import BaseHomeWindow as home
 
 
 class Launcher(QApplication):
