@@ -10,7 +10,7 @@ from nwbs.html import default_program_html, program_setup
 
 logger = logging.getLogger(__name__)
 
-def get_weeks(month: str, year: int):
+def get_weeks(month: str, year: int = datetime.now().year):
     month_dict = {name: num for num, name in enumerate(calendar.month_name) if num}
     month_int = month_dict[month]
     
@@ -32,13 +32,13 @@ def get_weeks(month: str, year: int):
     return weeks
 
 
-def get_all_urls(weeklist: dict, basepath: str, xmonth: str):
+def get_all_urls(weeklist: dict, basepath: str, xmonth: str, year=datetime.now().year):
     urls = []
     for month, weeks in weeklist.items():
         for week in weeks:
             urls.append(basepath.format(
                 week=week, 
-                year=str(datetime.now().year),
+                year=str(year),
                 monthx=xmonth.lower().strip(),
                 current_month=month.lower()
             ))
@@ -181,6 +181,18 @@ class SchedulerUtils:
         return full_program
     
     def save_program(self, filename:str, _dict:list) -> bool:
+        """
+        Saves the program to a file in the generated_programs folder.
+        The file is saved as a json file with the filename given as the argument.
+        The program is first parsed with the MeetingParser before being saved.
+        
+        Args:
+            filename (str): The name of the file to be saved without an extension
+            _dict (list): A list of dictionaries containing the program data. The dictionaries
+                should have the week_range as the key and the program data as the value
+        Returns:
+            bool: True if the file was saved successfully, False otherwise
+        """
         blob = {}
         for _d in _dict:
             for key in _d.keys():

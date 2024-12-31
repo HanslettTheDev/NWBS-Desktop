@@ -338,8 +338,7 @@ default_program_html = '''
         {% set last.val = step + length(d['preaching']) + 4 %}
         {% endfor %}
         <tr>
-            <td>7:36<strong style="color: rgb(126,0,36);">  {{ last.val + 1 }}. </strong><strong>Congregation Bible Study <a
-                        class="emph">({{ d['book_study'] }}):</a> (30 min.)</strong></td>
+            <td>7:36<strong style="color: rgb(126,0,36);">  {{ last.val + 1 }}. </strong><strong>Congregation Bible Study (30 min.)</strong></td>
             <td><a class="right nwb-roles">Conductor/Reader:</a></td>
             <td><a>{{ program["cong_bible_study"]["student"] }}/{{ program["cong_bible_study"]["assistant"] }} </a></td>
         </tr>
